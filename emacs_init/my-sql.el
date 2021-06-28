@@ -3,12 +3,10 @@
 (require 'my-utils)
 
 (setq sql-mysql-options '("-A" "-C" "-t" "-f" "-n"))
-(setq sql-user "wufj")
-;; (setq sql-password "MTvaoc2ouUwQJ9vr")
-;; (setq sql-server "101.132.176.239")
-(setq sql-password "XSp9mA6i7DMybooC")
-(setq sql-server "47.114.155.25")
-(setq sql-database "miulee4")
+(setq sql-user "")
+(setq sql-password "")
+(setq sql-server "")
+(setq sql-database "")
 
 
 (add-hook 'sql-interactive-mode-hook
