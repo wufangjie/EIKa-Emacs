@@ -26,6 +26,7 @@
 (defun rustic-cargo-fmt-and-current-test ()
   ;; NOTE: cursor must on function name row
   (interactive)
+  (beginning-of-defun)
   (rustic-format-file)
   (-if-let (test-to-run (rustic-cargo--get-test-target))
       (let* ((command (list rustic-cargo-bin "test" test-to-run))
