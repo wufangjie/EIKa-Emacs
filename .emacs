@@ -12,7 +12,6 @@
 
 ;;(global-unset-key (kbd "M-SPC"))
 
-
 (require 'my-theme)
 (require 'my-basic)
 (require 'my-utils)
@@ -22,7 +21,8 @@
 (require 'my-file)
 (require 'my-org)
 
-(require 'my-cc)
+(require 'my-rust)
+;(require 'my-cc)
 (require 'my-sql)
 (require 'my-python)
 
@@ -51,7 +51,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (jedi)))
+ '(package-selected-packages
+   (quote
+    (company flycheck lsp-mode gnu-elpa-keyring-update rustic use-package js2-mode jedi)))
  '(safe-local-variable-values
    (quote
     ((eval ignore-errors "Write-contents-functions is a buffer-local alternative to before-save-hook"
@@ -73,7 +75,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(button ((t (:inherit font-lock-function-name-face))))
- '(diary ((t (:inherit isearch))) t)
+ '(diary ((t (:inherit isearch))))
  '(ediff-current-diff-A ((t (:background "#663333"))) t)
  '(ediff-current-diff-Ancestor ((t (:background "#666633"))) t)
  '(ediff-current-diff-B ((t (:background "#333366"))) t)
@@ -91,7 +93,7 @@
  '(ediff-odd-diff-B ((t (:background "#222244"))) t)
  '(ediff-odd-diff-C ((t (:background "#224444"))) t)
  '(error ((t (:foreground "#e31b1c" :bold t))))
- '(eshell-prompt ((t (:inherit button))) t)
+ '(eshell-prompt ((t (:inherit button))))
  '(font-lock-builtin-face ((t (:foreground "#ffbbff" :bold t))))
  '(font-lock-comment-face ((t (:foreground "#66cd00"))))
  '(font-lock-constant-face ((t (:foreground "#ffb90f" :bold t))))
@@ -102,14 +104,14 @@
  '(font-lock-variable-name-face ((t (:foreground "#ffec8b"))))
  '(font-lock-warning-face ((t (:foreground "#000000" :background "#ffec8b" :bold t))))
  '(highlight ((t (:foreground "#ffffff" :background "#4682b4"))))
- '(holiday ((t (:inherit button))) t)
+ '(holiday ((t (:inherit button))))
  '(isearch ((t (:foreground "#000000" :background "#ffffff" :underline t :bold t))))
  '(isearch-fail ((t (:background "#e31b1c" :bold t))))
  '(lazy-highlight ((t (:foreground "#ffffff" :background "#4682b4"))))
  '(link ((t (:inherit font-lock-keyword-face :underline t))))
  '(link-visited ((t (:inherit font-lock-builtin-face :underline t))))
  '(minibuffer-prompt ((t (:inherit button))))
- '(org-block ((t (:foreground "#ffffff"))) t)
+ '(org-block ((t (:foreground "#ffffff"))))
  '(popup-face ((t (:foreground "#000000" :background "#d3d3d3"))) t)
  '(popup-menu-mouse-face ((t (:inherit region))) t)
  '(popup-menu-selection-face ((t (:inherit popup-tip-face))) t)

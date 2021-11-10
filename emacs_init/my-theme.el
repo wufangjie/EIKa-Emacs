@@ -54,7 +54,7 @@
          mode
          '(("\\<\\(FIXME\\|TODO\\|NOTE\\):"
 	    1 'font-lock-warning-face prepend))))
-      '(python-mode emacs-lisp-mode c-mode)) ; org-mode
+      '(python-mode emacs-lisp-mode c-mode rustic-mode)) ; org-mode
 ;; FIXME TODO : when keyword occur in org-mode's outline, incorrect color
 ;; in /usr/local/share/emacs/26.1/lisp/org/
 ;; org.el.gz defun org-context

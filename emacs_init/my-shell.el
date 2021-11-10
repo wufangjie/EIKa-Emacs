@@ -13,6 +13,7 @@
     "^xmodmap ~/\\.xmodmap$"
     "^sudo apt-get \\(update\\|upgrade\\|autoremove\\)$"
     "^man "
+    "^cargo new "
     "^\\(sudo \\)?pip[23]? \\(list\\|show\\|search\\)"
     " -\\(-version\\|[Vv]\\)$"
     ))

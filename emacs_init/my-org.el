@@ -1,7 +1,5 @@
 ;;; my-org.el -*- lexical-binding: t -*-
 
-
-
 (setq org-emphasis-regexp-components
       '("- 	('\"{【　"
 	"- 	.,:!?;'\")}\\[】"
