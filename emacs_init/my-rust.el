@@ -24,19 +24,19 @@
     (rustic-compilation c (list :buffer buf :process proc :mode mode))))
 
 (defun rustic-cargo-fmt-and-current-test ()
-  ;; NOTE: cursor must on function name row
   (interactive)
-  (beginning-of-defun)
-  (rustic-format-file)
-  (-if-let (test-to-run (rustic-cargo--get-test-target))
-      (let* ((command (list rustic-cargo-bin "test" test-to-run))
-             (c (append command (split-string (setq rustic-test-arguments
-						    "-- --nocapture"))))
-             (buf rustic-test-buffer-name)
-             (proc rustic-test-process-name)
-             (mode 'rustic-cargo-test-mode))
-        (rustic-compilation c (list :buffer buf :process proc :mode mode)))
-    (message "Could not find test at point.")))
+  (save-excursion
+    (beginning-of-defun)
+    (rustic-format-file)
+    (-if-let (test-to-run (rustic-cargo--get-test-target))
+	(let* ((command (list rustic-cargo-bin "test" test-to-run))
+	       (c (append command (split-string (setq rustic-test-arguments
+						      "-- --nocapture"))))
+	       (buf rustic-test-buffer-name)
+	       (proc rustic-test-process-name)
+	       (mode 'rustic-cargo-test-mode))
+	  (rustic-compilation c (list :buffer buf :process proc :mode mode)))
+      (message "Could not find test at point."))))
 
 (add-hook 'rustic-mode-hook
 	  (lambda ()
