@@ -1,8 +1,10 @@
 #+AUTHOR: wfj
 #+EMAIL: wufangjie1223@126.com
-#+HTML_HEAD_EXTRA: <style type="text/css"> body {padding-left: 26%; !important;} #table-of-contents {position: fixed; width: 25%; height: 100%; top: 0; left: 0; overflow-y: scroll;} .org-src-container {color: #ffffff !important; background: #131926 !important; } pre:before{color: #ffffff !important; background: #131926 !important;} </style>
-#+HTML_MATHJAX: path: "file:///usr/local/share/MathJax/MathJax.js"
 #+OPTIONS: ^:{} \n:t email:t
+#+HTML_HEAD_EXTRA: <style type="text/css"> body {padding-left: 26%; background: #e3edcd;} #table-of-contents {position: fixed; width: 25%; height: 100%; top: 0; left: 0; overflow-y: scroll; resize: horizontal;} i {color: #666666;} pre, pre.src:before {color: #ffffff; background: #131926;} </style>
+#+HTML_HEAD_EXTRA: <script type="text/javascript"> function adjust_html(){document.getElementsByTagName("body")[0].style.cssText="padding-left: "+(parseInt(document.getElementById("table-of-contents").style.width)+5)+"px; background: #e3edcd;"}; window.onload=function(){document.getElementById("table-of-contents").addEventListener("mouseup",adjust_html,true)}</script>
+#+HTML_HEAD_EXTRA: <style type="text/css"> mjx-mspace {white-space: normal;} </style>
+#+HTML_MATHJAX: path: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
 
 * emacs 26
 ** install emacs-26.1 on ubuntu 18.04
@@ -841,96 +843,6 @@ org能够识别有序列表, 无序列表和描述列表
 |--------+-----------------+--------------------------------------|
 | C-t    | transpose-chars | 当前光标和前一个交换, 光标向后移一位 |
 
-
-* jedi for python
-** 安装 git
-+ debian
-  #+BEGIN_SRC sh
-sudo apt-get install git
-  #+END_SRC
-+ mac os x
-
-  在安装 homebrew 时直接选择安装 git 即可, 也可通过源代码安装
-
-** 安装 pip
-+ debian
-  #+BEGIN_SRC sh
-sudo apt-get install python3-pip
-  #+END_SRC
-+ mac os x
-  #+BEGIN_SRC sh
-sudo easy_install pip
-  #+END_SRC
-
-** 改用国内的源
-添加或修改 ~/.pip/pip.conf 文件, 内容如下:
-#+BEGIN_EXAMPLE
-[global]
-timeout = 60
-index-url = http://pypi.douban.com/simple
---trusted-host = pypi.douban.com
-format = columns
-#+END_EXAMPLE
-
-** 安装 virtualenv
-#+BEGIN_SRC sh
-sudo pip3 install virtualenv # 注意不要用 apt 的, 15.0 版本的有问题
-#+END_SRC
-
-** 安装 el-get
-上面的准备工作完成, .emacs 中添加下述代码, 启动 emacs 等待安装完成
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-(el-get 'sync)
-#+END_SRC
-
-** 安装 exec-path-from-shell (只有 mac 需要此步骤)
-#+BEGIN_EXAMPLE
-M-x el-get-install RET exec-path-from-shell
-#+END_EXAMPLE
-在 el-get 路径被 load 之后, 添加
-#+BEGIN_SRC emacs-lisp
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
-#+END_SRC
-
-** 安装 jedi
-#+BEGIN_EXAMPLE
-M-x el-get-install RET jedi
-M-x jedi:install-server
-#+END_EXAMPLE
-
-** 重要说明
-其实如果是 linux 的话, 直接复制 .emacs.d 文件到 HOME 即可.\\
-如果提示 python environment 的问题, 删除 emacs.d/.python-environments 之后重新安装 jedi server 即可
-
-** 添加 jedi 的搜索路径到 .emacs
-#+BEGIN_SRC emacs-lisp
-(setq jedi:server-args
-      '("--sys-path" "/usr/lib/python3/dist-packages"
-	"--sys-path" "/usr/local/lib/python3.4/dist-packages"
-	"--sys-path" "/home/wfj/packages"))
-#+END_SRC
-
-** 快捷键和命令
-| 快捷键  | 命令                            | 特殊说明                      |
-|---------+---------------------------------+-------------------------------|
-| .       | jedi:dot-complete               | (setq jedi:complete-on-dot t) |
-| <C-tab> | jedi:complete                   |                               |
-| C-c ,   | jedi:goto-definition-pop-marker | forward                       |
-| C-c .   | jedi:goto-definition            | backward                      |
-| C-c ?   | jedi:show-doc                   |                               |
-| C-c d   | jedi:show-doc                   | (setq jedi:setup-keys t)      |
-|---------+---------------------------------+-------------------------------|
-| C-,     | jedi:goto-definition-pop-marker | not recommend                 |
-| C-.     | jedi:goto-definition            | not recommend                 |
-
 * for windows
 ** 设置环境变量 HOME, 效果类似 linux 的 home
 ** +修改注册表 (可能会有问题, 不用)+
@@ -1014,7 +926,6 @@ NOTE: 所有的修改都保存在 ~/.config/fcitx (有一次出现了数字键�
 6. 其他的应该都还行
 
 * pyim
-
 ** 配置和更新 melpa 源
 #+BEGIN_SRC emacs-lisp
 (require 'package)
@@ -1065,3 +976,62 @@ pyim-probe-dynamic-english #没有
 中文zhu'yin'ran'hou'xiu'gai双行显示可是可以的你们说呢是吧可惜不是你等我到最后
 不能打太多，行数也相等
 zhongwenhaixing，nimenshuone，方块字必须的
+* package-install
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+#+END_SRC
+
+** install jedi
+*** 安装 virtualenv
+#+BEGIN_SRC sh
+sudo pip3 install virtualenv # 注意用 sudo, 不然找不到
+#+END_SRC
+
+*** 安装 exec-path-from-shell (只有 mac 需要此步骤)
+#+BEGIN_EXAMPLE
+M-x el-get-install RET exec-path-from-shell
+#+END_EXAMPLE
+在 el-get 路径被 load 之后, 添加
+
+*** 安装 jedi
+#+BEGIN_SRC emacs-lisp
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+#+END_SRC
+
+M-x package-refresh-contents
+M-x package-install ret jedi ret
+M-x jedi:install-server
+
+*** 添加 jedi 的搜索路径到 .emacs
+#+BEGIN_SRC emacs-lisp
+(setq jedi:server-args
+      '("--sys-path" "/usr/lib/python3/dist-packages"
+	"--sys-path" "/usr/local/lib/python3.4/dist-packages"
+	"--sys-path" "/home/wfj/packages"))
+#+END_SRC
+
+*** 快捷键和命令
+| 快捷键  | 命令                            | 特殊说明                      |
+|---------+---------------------------------+-------------------------------|
+| .       | jedi:dot-complete               | (setq jedi:complete-on-dot t) |
+| <C-tab> | jedi:complete                   |                               |
+| C-c ,   | jedi:goto-definition-pop-marker | forward                       |
+| C-c .   | jedi:goto-definition            | backward                      |
+| C-c ?   | jedi:show-doc                   |                               |
+| C-c d   | jedi:show-doc                   | (setq jedi:setup-keys t)      |
+|---------+---------------------------------+-------------------------------|
+| C-,     | jedi:goto-definition-pop-marker | not recommend                 |
+| C-.     | jedi:goto-definition            | not recommend                 |
+
+** install rustic
++ lsp-mode (install before rustic)
++ flycheck
++ rustic
++ company
++ +yasnippet+
+
+M-x lsp-install-server ret rust-analyzer ret
+
+保存在 ~/.emacs.d/.cache/lsp/rust/
