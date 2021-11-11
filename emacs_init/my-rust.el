@@ -12,7 +12,7 @@
 ;; 	      (rustic-format-file))))
 
 ;; NOTE: (rustic-compilation-process-live) will prompt minibuffer asking
-(defun rustic-cargo-fmt-and-test ()
+(defun rustic-cargo-fmt-then-test ()
   (interactive)
   (rustic-cargo-fmt)
   (let* ((command (list rustic-cargo-bin "test"))
@@ -23,7 +23,7 @@
          (mode 'rustic-cargo-test-mode))
     (rustic-compilation c (list :buffer buf :process proc :mode mode))))
 
-(defun rustic-cargo-fmt-and-current-test ()
+(defun rustic-cargo-fmt-then-current-test ()
   (interactive)
   (save-excursion
     (beginning-of-defun)
@@ -48,7 +48,7 @@
 	    (with-current-buffer buffer (read-only-mode -1) (erase-buffer))
 	    (call-process-shell-command
 	     (format "grep -rn \"%s\" %s --exclude-dir=target/ --exclude-dir=.git/"
-		     (read-from-minibuffer "Content to grep: ") dir)
+		     (read-from-minibuffer "Crate grep: ") dir)
 	     nil buffer)
 	    (with-current-buffer buffer (insert "\nGrep finished!") (grep-mode))
 	    (pop-to-buffer buffer))))
@@ -57,9 +57,9 @@
 (add-hook 'rustic-mode-hook
 	  (lambda ()
 	    (local-unset-key (kbd "C-c C-c C-t"))
-	    (local-set-key (kbd "C-c C-c C-t") 'rustic-cargo-fmt-and-test)
+	    (local-set-key (kbd "C-c C-c C-t") 'rustic-cargo-fmt-then-test)
 	    (local-unset-key (kbd "C-c C-c C-c"))
-	    (local-set-key (kbd "C-c C-c C-c") 'rustic-cargo-fmt-and-current-test)
+	    (local-set-key (kbd "C-c C-c C-c") 'rustic-cargo-fmt-then-current-test)
 	    (local-set-key (kbd "C-c C-c C-g") 'rustic-crate-grep)
 	    ))
 
