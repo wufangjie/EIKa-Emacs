@@ -57,8 +57,8 @@
 	    (if (= (count-windows) 1)
 		(pop-to-buffer buffer)
 	      (progn
-		(set-window-buffer (or (next-window) (previus-window)) buffer)
-		(other-window 1)))))
+		(other-window 1)
+		(set-window-buffer (selected-window) buffer)))))
       (message "Could not find crate root!"))))
 
 (add-hook 'rustic-mode-hook
