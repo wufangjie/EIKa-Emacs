@@ -43,22 +43,16 @@
   (let ((dir (locate-dominating-file
 	      (buffer-file-name (current-buffer)) "Cargo.toml")))
     (if dir
-	(progn
-	  (let ((buffer (get-buffer-create "*rust grep*")))
-	    (with-current-buffer buffer (read-only-mode -1) (erase-buffer))
-	    (call-process-shell-command
-	     (format "grep -rn \"%s\" %s --exclude-dir=target/ --exclude-dir=.git/"
-		     (read-from-minibuffer "Crate grep: ") dir)
-	     nil buffer)
-	    (with-current-buffer buffer
-	      (insert "\nGrep finished!")
-	      (grep-mode)
-	      (goto-char (point-min)))
-	    (if (= (count-windows) 1)
-		(pop-to-buffer buffer)
-	      (progn
-		(other-window 1)
-		(set-window-buffer (selected-window) buffer)))))
+	(let ((buffer (get-buffer-create "*rust grep*")))
+	  (shell-command
+	   (format "grep -rn \"%s\" %s --exclude-dir=target/ --exclude-dir=.git/"
+		   (read-from-minibuffer "Crate grep: ") dir)
+	   buffer)
+	  (with-current-buffer buffer (grep-mode))
+	  (if (= (count-windows) 1)
+	      (pop-to-buffer buffer)
+	    (set-window-buffer (or (next-window) (window-at 0 0)) buffer)
+	    (other-window 1)))
       (message "Could not find crate root!"))))
 
 (add-hook 'rustic-mode-hook
