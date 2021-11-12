@@ -23,14 +23,13 @@
 (defun rustic-cargo-fmt-then-test ()
   (interactive)
   (wait-proc (rustic-cargo-fmt))
-  (rustic-cargo-test-run "-- --nocapture"))
+  (rustic-cargo-test-run rustic-test-arguments))
 
 (defun rustic-cargo-fmt-then-current-test ()
   (interactive)
   (save-excursion
     (beginning-of-defun)
     (rustic-format-file) ; NOTE: no wait here
-    (setq rustic-test-arguments "-- --nocapture")
     (rustic-cargo-current-test)))
 
 (defun rustic-crate-grep ()
@@ -52,6 +51,7 @@
 
 (add-hook 'rustic-mode-hook
 	  (lambda ()
+	    (setq rustic-test-arguments "-- --nocapture")
 	    (local-unset-key (kbd "C-c C-c C-t"))
 	    (local-set-key (kbd "C-c C-c C-t") 'rustic-cargo-fmt-then-test)
 	    (local-unset-key (kbd "C-c C-c C-c"))
