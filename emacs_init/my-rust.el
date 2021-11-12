@@ -50,9 +50,16 @@
 	     (format "grep -rn \"%s\" %s --exclude-dir=target/ --exclude-dir=.git/"
 		     (read-from-minibuffer "Crate grep: ") dir)
 	     nil buffer)
-	    (with-current-buffer buffer (insert "\nGrep finished!") (grep-mode))
-	    (pop-to-buffer buffer))))
-    (message "Can not find crate root!")))
+	    (with-current-buffer buffer
+	      (insert "\nGrep finished!")
+	      (grep-mode)
+	      (goto-char (point-min)))
+	    (if (= (count-windows) 1)
+		(pop-to-buffer buffer)
+	      (progn
+		(set-window-buffer (or (next-window) (previus-window)) buffer)
+		(other-window 1)))))
+      (message "Could not find crate root!"))))
 
 (add-hook 'rustic-mode-hook
 	  (lambda ()
