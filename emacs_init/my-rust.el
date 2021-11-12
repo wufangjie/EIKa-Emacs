@@ -1,10 +1,14 @@
-;;; my-rust.el ergonomic enchance for rust programming.
+;;; my-rust.el ergonomic enhance for rust programming.
 
 ;; Version: 0.1.0
 ;; URL: https://github.com/wufangjie/EIKa-Emacs/blob/main/emacs_init/my-rust.el
 ;; Package-Requires: rustic
 
-;;
+;; enhances:
+;; 1. auto fmt before run, test, current-test
+;; 2. can call current-test in test body rather than must in fn row
+;; 3. crate-level grep
+
 ;; (setq-default rustic-format-on-save t)
 ;; (setq-default rustic-format-display-method 'ignore)
 ;; (setq-default rustic-format-trigger 'on-compile) ;'on-save
