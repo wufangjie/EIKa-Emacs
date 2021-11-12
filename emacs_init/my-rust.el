@@ -1,3 +1,10 @@
+;;; my-rust.el ergonomic enchance for rust programming.
+
+;; Version: 0.1.0
+;; URL: https://github.com/wufangjie/EIKa-Emacs/blob/main/emacs_init/my-rust.el
+;; Package-Requires: rustic
+
+;;
 ;; (setq-default rustic-format-on-save t)
 ;; (setq-default rustic-format-display-method 'ignore)
 ;; (setq-default rustic-format-trigger 'on-compile) ;'on-save
