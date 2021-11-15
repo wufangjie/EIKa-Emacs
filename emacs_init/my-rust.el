@@ -39,6 +39,7 @@
 (defun rustic-cargo-fmt-then-current-test ()
   (interactive)
   (save-excursion
+    (move-end-of-line 1) ; fixed bug: when cursor at the beginning of a function
     (beginning-of-defun)
     (rustic-format-file) ; NOTE: no wait here
     (rustic-cargo-current-test)))
