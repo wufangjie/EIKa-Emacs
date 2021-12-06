@@ -15,9 +15,9 @@
 
 (add-hook 'org-mode-hook
 	  (lambda ()
-	    ;(linum-mode -1)
+	    ;; (linum-mode -1)
 	    (setq truncate-lines nil) ; use M-x toggle-truncate-lines
-	    ;(setq org-src-fontify-natively t)  ; highlight source code
+	    ;; (setq org-src-fontify-natively t) ; highlight source code
 	    (setq org-html-validation-link nil)
 	    ;; (setcar org-emphasis-regexp-components "- 	('\"{【　")
 	    ;; (setcar (cdr org-emphasis-regexp-components) "- 	.,:!?;'\")}\\[】")
@@ -51,7 +51,7 @@
 	       ))
    ))
 
-; https://1024th.github.io/MathJax_Tutorial_CN/#/document
+;; https://1024th.github.io/MathJax_Tutorial_CN/#/document
 
 (setq org-html-mathjax-template
       "

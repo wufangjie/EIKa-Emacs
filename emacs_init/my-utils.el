@@ -24,5 +24,4 @@ TODO: use string= instead of equal, since we only use string."
 
 
 
-
 (provide 'my-utils)

@@ -9,15 +9,15 @@
 (if (string-equal system-type "gnu/linux")
     (setq python-shell-interpreter "python3"))
 
-;(add-hook 'python-mode-hook 'hs-minor-mode)
+;; (add-hook 'python-mode-hook 'hs-minor-mode)
 (add-hook 'inferior-python-mode-hook
 	  (lambda ()
 	    ;; (outline-minor-mode t)
 	    ;; (setq outline-regexp "\\(>>> \\)+")
 	    (setq-local paragraph-start "^>>> ")
-	    ;(paragraph-separate "")
-	    ;(setq comint-use-prompt-regexp t)
-	    ;(setq comint-prompt-regexp "^\\(>>> \\)+"
+	    ;; (paragraph-separate "")
+	    ;; (setq comint-use-prompt-regexp t)
+	    ;; (setq comint-prompt-regexp "^\\(>>> \\)+"
 	    ))
 
 

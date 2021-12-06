@@ -3,16 +3,16 @@
 ;; HelloWorld|
 ;; frame 相关| 被注释掉的那些语句在打开一个新的 frame 时会失效, 不能用
 ;; #####################################################################
-;(set-face-attribute 'default nil :font "Yuan Mo Wen:pixelsize=24")
+;; (set-face-attribute 'default nil :font "Yuan Mo Wen:pixelsize=24")
 (add-to-list 'default-frame-alist '(font . "Yuan Mo Wen:pixelsize=22"))
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(alpha . 90))
-;;(add-to-list 'default-frame-alist '(alpha . 100))
-;;(add-to-list 'default-frame-alist '(background-color . "#000000"))
+;; (add-to-list 'default-frame-alist '(alpha . 100))
+;; (add-to-list 'default-frame-alist '(background-color . "#000000"))
 (add-to-list 'default-frame-alist '(background-color . "#131926"))
 (add-to-list 'default-frame-alist '(foreground-color . "#ffffff"))
-;(set-foreground-color "#ffffff")
-;(set-background-color "#131926")
+;; (set-foreground-color "#ffffff")
+;; (set-background-color "#131926")
 
 
 
@@ -32,7 +32,7 @@
 
 
 (setq blink-cursor-mode nil)
-;(setq blink-cursor-delay 1)
+;; (setq blink-cursor-delay 1)
 
 
 (setq frame-title-format "%b")
@@ -134,12 +134,11 @@
    '(warning ((t (:inherit font-lock-warning-face))) t)
    '(success ((t (:inherit font-lock-type-face))) t)
 
-
-   ;`(region ((t (:background "#003153"))) t) ;; 其他都好黑色不明显
-   ;`(region ((t (:background "#4d3900"))) t) ;; 咖啡, 黑色略淡
-   ;`(region ((t (:background "#7b68bb"))) t) ; 绿色略淡
-   ;`(region ((t (:background "#996b1f"))) t) ; 可
-   ;`(region ((t (:background ,gray))) t)
+   ;;`(region ((t (:background "#003153"))) t) ;; 其他都好黑色不明显
+   ;;`(region ((t (:background "#4d3900"))) t) ;; 咖啡, 黑色略淡
+   ;;`(region ((t (:background "#7b68bb"))) t) ; 绿色略淡
+   ;;`(region ((t (:background "#996b1f"))) t) ; 可
+   ;;`(region ((t (:background ,gray))) t)
 
    `(ediff-current-diff-A ((t (:background "#663333"))) t)
    `(ediff-current-diff-B ((t (:background "#333366"))) t)

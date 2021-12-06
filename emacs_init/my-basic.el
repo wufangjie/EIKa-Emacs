@@ -74,7 +74,7 @@
 		 (read-from-minibuffer "Set transparency (0~99): ")))))
   (let ((n (- 100 (min 99 (max 0 n)))))
     (set-frame-parameter (selected-frame) 'alpha `(,n ,n))))
-;(set-transparency 10)
+;; (set-transparency 10)
 
 
 (defun set-line-spacing (n)
