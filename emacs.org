@@ -4,141 +4,8 @@
 #+HTML_HEAD_EXTRA: <style type="text/css"> body {padding-left: 26%; background: #e3edcd;} #table-of-contents {position: fixed; width: 25%; height: 100%; top: 0; left: 0; overflow-y: scroll; resize: horizontal;} i {color: #666666;} pre, pre.src:before {color: #ffffff; background: #131926;} </style>
 #+HTML_HEAD_EXTRA: <script type="text/javascript"> function adjust_html(){document.getElementsByTagName("body")[0].style.cssText="padding-left: "+(parseInt(document.getElementById("table-of-contents").style.width)+5)+"px; background: #e3edcd;"}; window.onload=function(){document.getElementById("table-of-contents").addEventListener("mouseup",adjust_html,true)}</script>
 #+HTML_HEAD_EXTRA: <style type="text/css"> mjx-mspace {white-space: normal;} </style>
-#+HTML_MATHJAX: path: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-
-* emacs 26
-** install emacs-26.1 on ubuntu 18.04
-First, uncomment /etc/apt/sources.list deb-src lines, then
-#+BEGIN_SRC sh
-sudo apt-get update
-sudo apt-get build-dep emacs25
-cd ~/emacs-26.1 # source code directory
-./autogen.sh
-./configure
-make
-sudo make install
-#+END_SRC
-
-then emacs-26.1 can be found in /usr/local/bin/
-
-** 24 bit terminal color
-Unified the look, awesome, magic
-
-** display line number
-#+BEGIN_SRC emacs-lisp
-(global-display-line-numbers-mode t)
-;(global-linum-mode t)
-#+END_SRC
-+ 暂时的使用结果, 打开 org-mode 确实比原来的快了很多, 不用特意在 org-mode 时不显示行号了
-+ 大于 999 行时, 之后的行会向后缩进一个字符, 习惯了也还好吧, 在那些行输入的时候可能会出现来回跳转的问题
-
-** eww
-可以说是最好用的夜间模式了, 但是还有很多问题, 无法达到实际实用的程度, 比如 org-mode 导出的网页, mathjax 渲染, 图片排版等等
-
-** rectangle-mark-mode
-选择区域比原来 (以头尾两行的最大宽度定) 人性化了
-
-** org-mode
-现在默认开启了代码高亮
-导出有代码片段的文章为网页时需要安装 (之前的版本可能是内置了), el-get-install RET htmlize
-
-** double buffering
-好像是解决了 gui 版本的移动导致的显示重影问题, 但是现在 terminal 版本会出现疑似重影问题
-
-** multi-thread
-暂时没什么感觉
-
-* TODO list
-对写代码来说可能没什么大用, 但感觉还是有很多潜在的用途, 学习一下
-#+SEQ_TODO: FIXME(m) | FIXED(f)
-#+SEQ_TODO: TODO(T!) | DONE(D@)  CANCELED(C@/!)
-https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML
-http://orgmode.org/mathjax/MathJax.js
-
-* use emacs -nw or gui
-1. 重影问题, 明明很短的一个文件 M-</>, 也会有出现, 可以通过 M-x redraw-display 解决, 已经重写了 C-l 强制刷新
-2. 中英文混排等高等宽的问题, 通过自制字体完美解决
-3. 颜色相关, 26.1 已支持 24bit color
-
-+打算再一次尝试 emacs -nw; 我记得原来是做过一个两者的比较, 好像有一些功能不能在 terminal 下实现, 所以放弃了, 现记录如下:+\\
-又一次尝试了 emacs -nw, 试了很多终端模拟器, 找了很多键绑定方法, 终于勉强能用:
-| 功能对比     | -nw                          | gui                          |
-|--------------+------------------------------+------------------------------|
-| 半透明效果   | 0.9, 我的垃圾显示器都超棒    | alpha + sRGB 打平            |
-| 背景色       | 不透明                       | 仍然透明                     |
-|--------------+------------------------------+------------------------------|
-| 与剪贴板交互 | 不方便, C-V (注意是大写)     | 可以                         |
-| +光标        | 不会改变前景色, 导致看不清+  |                              |
-|              | popup 显示移位 (极少出现)    |                              |
-|              | 删除线无法显示               |                              |
-| 半透明选中   |                              | 会显示下一层的内容, 影响观看 |
-|              | +C-tab jedi:complete 冲突+   |                              |
-|              | +与 org-mode 表格快捷键冲突+ |                              |
-|              | popup 有不小的几率崩溃       |                              |
-|              | ediff, vc-ediff 完全没法用   |                              |
-|--------------+------------------------------+------------------------------|
-|              | +致命的缺点导致不能日常使用+ |                              |
-
-** 快捷键不对的原因和解决方案
-M-x describe-bindings 在最后的 input decoding map translations 页, 可以看到 gui 的键绑定很少, 而 -nw 有很多
-可以看到 M-[ 是很多 xterm control sequences (正好我试过的所有终端模拟器都有这个问题, 除了 urxvt, 但是它显示的中文实在太小, 不能容忍)
-而我为这个快捷键绑定了命令, terminal 就会认为 xterm control sequences 到此结束了, 出现的结果也是 backward 了一个段落的距离然后打印出剩余的字符
-(只是如果我不知道这些就根本不会往那个地方想)
-我想这也是为什么 emacs 会设置 M-{ 而不是 M-[ 为 backward-paragraph
-
-一个有用的技巧, 虽然对解决这个问题没有起到什么作用: 在 command line 下输入 cat 回车, 再输入就会显示输入的真实按键
-
-Ctrl 的组合按键还是有问题, 比如 tab 和数字键:
-1. 可能是原来那些按键是有 function key map 的, 然后 translations 是先 function 再 encoding?
-2. 终端模拟器的设计问题
-
-不正常的按键 C--, C-TAB, C-0 .. C-9, 除了 TAB 都可以用 ESC prefix 代替, 习惯了 alt + tab, 再按 alt + 4 关闭应用
-正常的按键 C-/ C-SPC C-\
-这两个键是被我用作 xfce appfinder 的全局快捷键, 正常 C-; C-'
-f1 .. f12 我是不用的, 相关组合键不知道有没有问题
-C-a .. C-y 都正常工作
-NOTE: C-z 会结束关掉整个 emacs (可能没关掉, 因为对应文件的 pid 还在), 慎重慎重慎重, 所以我的选择是解除这个键绑定
-一个相同遭遇的人 https://github.com/emacs-tw/emacs-101/blob/master/%E9%99%84%E9%8C%84B-%E7%B5%82%E7%AB%AF%E6%A9%9F%E4%B8%8B%E7%9A%84Emacs.org
-
-** clipboard
-复制的话自己写一个 interactive 函数调用 xsel 或 xclip 都行 (使用频率不高, 搜索我都是用自己写的 fast-search 的), 粘贴的话绑定为 C-M-y, 如果要把粘贴内容保存到 kill ring, 直接在粘贴完之后 C-w 即可, 应该也算完美解决
-
-** 光标
-terminalrc 文件设置 ColorCursor= (空值), 能解决光标不显示前景色的问题, 而且光标会随着所在行不同而改变颜色, 应该算是完美解决
-
-** 快速运行和全屏
-xfce appfinder 中为正则表达式 ^e$, 绑定命令 exo-open --launch TerminalEmulator emacs -nw 就能直接打开,
-可惜不能再加全屏参数, 不过手动为不同的屏幕设置 MiscDefaultGeometry= 默认大小即可, 这还能顺带解决 minibuffer 全屏时太高的问题
-设置了 MiscDefaultGeometry 之后, 再最大化窗口, minibuffer 正常了, 主要是 terminal 设计的就是不能显示半行
-
-** 崩溃问题
-几次崩溃经历都是在 xcfe4-terminal 中运行 emacs -nw 导致的, 反正现在用 appfinder 直接自定义命令打开 (没有外部的 terminal), 还没出现问题
 
 * tricks
-** emacs for mysql
-#+BEGIN_SRC emacs-lisp
-(setq sql-mysql-options '("-A" "-C" "-t" "-f" "-n"))
-(setq sql-user "default-user")
-(setq sql-password "default-password")
-(setq sql-server "127.0.0.1") ; 192.168.1.126
-#+END_SRC
-0. M-x sql-mysql
-1. 密码设好了的话就不用再输密码了直接回车就行
-2. 因为有 history 存在, 可以在输入界面 M-p/n 选择历史记录
-3. 需要打开多个的话加前缀再打开
-4. sql-mysql-options -A 表示关闭表名字段名的 auto-completion, 我试了默认情况也不能补全, 可能是用法不对
-5. 虽然开始时要输入数据库名, 但进入之后还是可以用 use some-database; 改变
-6. 常用操作, 如下:
-| C-c C-c | comint-interrupt-subjob |
-| C-c C-z | comint-stop-subjob      |
-| C-c C-p | comint-previous-prompt  |
-| C-c C-n | comint-next-prompt      |
-| C-c M-o | comint-clear-buffer     |
-| M-n     | comint-previous-input   |
-| M-p     | comint-next-input       |
-
-NOTE: 如果多行复制过来运行的话, 别忘了最后加分号
-
 ** sudo
 打开文件时, 在文件名前加 /sudo:: 即可以 sudo 打开
 
@@ -157,49 +24,9 @@ NOTE: 如果多行复制过来运行的话, 别忘了最后加分号
 |             | hl-line-mode           |                                      |
 | C-o         | open-line              | 在该行上方插入一行, 光标上移         |
 
-** term-mode
-M-x term 可以跑一个 fully functional 的 terminal, (我是在研究如何用 windows 下的 emacs 跑 ubuntu on windows 的 shell 时, 找资料发现的, 可惜的是 windows 下的 terminal 都不能用这个模式)
-很长一段时间我以为是所有的 emacs 快捷键都没用了, 那还怎么玩 (M-x 都不行)
-其实不是, Term-mode 有两种输入模式 line-mode 和 char-mode
-简单来说 line-mode 就是普通的 emacs buffer, 按回车生效, char-mode 输入的每个字符都直接发送给终端, 所以 emacs 的快捷键都失效了 (除了 C-c 前缀的, 如下), 默认的就是 char-mode
-| C-c C-j | term-line-mode        | char-mode 很少有生效的按键, 实现为 toggle |
-| C-c C-k | term-char-mode        | 谁设计的快捷键这么难记                    |
-|---------+-----------------------+-------------------------------------------|
-| C-c C-c | term-interrupt-subjob |                                           |
-| C-c C-z | term-stop-subjob      |                                           |
-| C-c C-p | term-previous-prompt  |                                           |
-| C-c C-n | term-next-prompt      |                                           |
-NOTE: 其实我也不太在意多按一个回车键, 和 emacs 全局快捷键相比不值一提, 就把默认的改成 line-mode 了
-
-** python-mode
-如果不想依托于文件就打开解释器, M-x run-python
-为了方便使用, 我对文件做了一些修改:
-*** python-mode 的一些说明
-emacs25 之后 C-c C-s 和 C-c C-r 不再能够调用 run-python,\\
-需要先 C-c C-p 才行, 而且 C-c C-p 之前需要加 prefix command\\
-才能调出 dedicated process
-emacs24.5 C-c C-c 等带前缀的话, 可以让 if __name__ == '__main__' 块内的代码运行, 默认不运行
-
-*** python mode 的文件如果有打开解释器的话, 按 ESC TAB, 会在 *Completions* buffer 打开所有的补全, 就像在解释器里直接按 TAB 一样
-
-*** emacs python-mode 卡顿原因查找
-#+BEGIN_EXAMPLE
-M-x profiler-start 做那些很卡的操作
-M-x profiler-report 看结果
-发现是字体高亮的问题, 以 root 打开以下文件
-/sudo::/usr/share/emacs/24.5/lisp/progmodes/python.el.gz
-注释了 assignment 部分 (特别慢), 并给予所有赋值号 font-lock-builtin-face
-添加, 修改了几个关键词
-M-x byte-compile-file RET python.el.gz 如果没有报错就说明成功了
-#+END_EXAMPLE
-
-
-** c 函数帮助文档
-1. c-mode 中我设置了键绑定 C-c d 来查看函数的 man pages
-2. M-x man RET
-
-** 对比两个 buffer
-M-x ediff-buffers 或 ediff 开启对比, (仅 linux 可用)\\
+** ediff and vc-ediff
+*** ediff
+M-x ediff-buffers 或 ediff 开启对比, (仅 linux 可用)
 此时会出现一个新的 frame (右上角提示) 可进行如下操作:
 | 竖线 | 切换模式 (上下对比 / 左右对比) |
 | ?    | 帮助                           |
@@ -217,23 +44,19 @@ M-x ediff-buffers 或 ediff 开启对比, (仅 linux 可用)\\
 | 无前缀 | 工作区和版本库的区别            |
 | 有前缀 | 分两次输入 comment_id, 进行比较 |
 
-** if you want to insert control characters
+** 控制字符
 | C-q | (qouted-insert ARG) | Read next input character and insert it |
 #+BEGIN_EXAMPLE
 
 #+END_EXAMPLE
 
 ** 输入重复的数字
-重复字符很简单, 但要输入重复数字不查资料, 还真想不到怎么做:\\
+重复字符很简单, 但要输入重复数字不查资料, 还真想不到怎么做:
 C-digits C-u digit-your-want-to-repeat
 
-** org-table minor mode
-+ M-x orgtbl-mode
-+ 在 .emacs 文件中添加
-  #+BEGIN_SRC emacs-lisp
-(add-hook 'python-mode-hook 'turn-on-orgtbl)
-  #+END_SRC
-NOTE: 开了这个模式的话, 自动补全的回车选中就失灵了 (直接回车), 而且 jedi 跳转速度有时候会很慢, 反正要用的时候再开就好
+** 矩形区域编辑 (rectangle-mark-mode)
+C-x SPACE 移动
+26+ 版本, 选择区域比原来 (以头尾两行的最大宽度定) 人性化了
 
 ** comint
 https://www.masteringemacs.org/article/comint-writing-command-interpreter
@@ -270,195 +93,23 @@ paragarph 移动的方式, 暂时不加入 .emacs
 (global-set-key (kbd "M-h") 'mark-paragraph)
 #+END_SRC
 
-** +outline-minor-mode+
-| 快捷键 | 命令                        | 说明     |
-|--------+-----------------------------+----------|
-|        | hide-body                   | 隐藏所有 |
-|        | show-all                    | 显示所有 |
-|        | hide-entry                  | 隐藏当前 |
-|        | show-entry                  | 显示当前 |
-|        | outline-backward-same-level |          |
-|        | outline-forward-same-level  |          |
-需要设置 outline-regexp 实现, 详见 .emacs, 类似功能的还有 hs-minor-mode
-
-** +list-buffers (abandon, use ibuffer instead)+
-| 快捷键  | 命令                          | 说明                         |
-|---------+-------------------------------+------------------------------|
-| C-x C-b | list-buffers                  |                              |
-|---------+-------------------------------+------------------------------|
-| d       | Buffer-menu-delete            | 这块和 dired-mode 完全相同   |
-| x       | Buffer-menu-execute           |                              |
-| u       | Buffer-menu-unmark            |                              |
-| DEL     | Buffer-menu-backup-unmark     |                              |
-| o       | Buffer-menu-other-window      |                              |
-| g       | revert-buffer                 |                              |
-|---------+-------------------------------+------------------------------|
-| S       | tabulated-list-sort           | 按光标所在的列排序, **大写** |
-| T       | Buffer-menu-toggle-files-only | 仅显示有对应文件的 buffer    |
-
-可以类比 dired-mode, 其他功能不常用, 还容易和记混, 不推荐使用
-
-** +calendar+
-| 快捷键 | 命令                        | 说明                                    |
-|--------+-----------------------------+-----------------------------------------|
-|        | calendar                    |                                         |
-|--------+-----------------------------+-----------------------------------------|
-| C-b/f  |                             | 前 / 后一天                             |
-| C-p/n  |                             | 前 / 后一星期的当天                     |
-| C-a/e  |                             | 星期的第一天 / 最后一天                 |
-| M-</>  |                             | 年的第一天 / 最后一天                   |
-| M/C-v  |                             | 前 / 后三个月                           |
-| x      | calendar-mark-holidays      | 高亮节假日                              |
-| u      | calendar-unmark             | 取消高亮                                |
-| .      | calendar-goto-today         | 定位到今天                              |
-| h      | calendar-cursor-holidays    |                                         |
-| a      | calendar-list-holidays      |                                         |
-| q      | kill-buffer-and-window      | 小窗口难受, 已重新绑定为当前值          |
-| M-=    | calendar-count-days-region  | 先 C-space 标记, 计算天数 (包括头尾)    |
-|--------+-----------------------------+-----------------------------------------|
-| M-a/e  |                             | 月的第一天 / 最后一天                   |
-| M-{/}  |                             | 上 / 下一个月的当天                     |
-|--------+-----------------------------+-----------------------------------------|
-| d      | diary-view-entries          |                                         |
-| s      | diary-show-all-entries      |                                         |
-| m      | diary-mark-entries          |                                         |
-|--------+-----------------------------+-----------------------------------------|
-| p C    | calendar-chinese-print-date | 显示农历                                |
-| p c    | calendar-iso-print-date     |                                         |
-| g C    | calendar-chinese-goto-date  | cycle, 干支, 月, 日, 77*60+34-2017=2637 |
-| g c    | calendar-iso-goto-date      | 年, 周, 周几                            |
-| g D    | calendar-goto-day-of-year   | 年, 天                                  |
-| g d    | calendar-goto-date          | 年, 月, 日                              |
-
-* regular expression
-|       |                                        |                              |
-|-------+----------------------------------------+------------------------------|
-|       | re-builder                             | string (use \\ instead of \) |
-| C-M-s | isearch-forward-regexp		 |                              |
-| C-M-r | isearch-backward-regexp                |                              |
-
-1. ^ $ . * + ? [ ] ( ) { } \ | [-], 作用和一般正则表达式基本相同, 不支持零宽断言等高级语法
-2. 相同
-| \w \W | 匹配任何构成词的字符, 由语法表决定   |
-| \1    | 匹配捕获                             |
-| \b \B | 匹配空串, 但仅在一个词的开始或结尾处 |
-| \< \> | 匹配空串, 但仅在一个词的开始或结尾处 |
-3. 与一般正则表达式区别
-+ 大小写不敏感
-+ ( ) { } | 匹配字符时不用转义, 特殊字符时反而要转义
-+ \ 在 [] 中不是特殊字符, 比如 "[\n]" (字符串转义) 而不是 "[\\n]" (匹配 \ 或 n)
-+ \d \D 不能匹配数字
-+ ^ $ 匹配行首和行尾, \` \' 匹配 buffer 的头和尾
-+ \sC \SC, C in {w(\w), -(\s),  (\s), .(普通标点符号)}
-+ \cC \CC, C 详见 M-x describe-categories
-
 * org-mode
 ** 用大纲 (outline) 组织内容
-*** 定义标题
-1. * 要位于行首
-2. * 之后要有一个空格, 然后再输入标题
-3. 多个 * 表示多级大纲, 显示为不同颜色
-
-**** 4
-***** 5
-****** 6
-******* 7
-******** 8
-最多 8 个不同颜色的标题, 之后重复
-
-*** 大纲的状态
-| 光标所在大纲的状态         | 整个文档的大纲状态 |
-|----------------------------+--------------------|
-| 仅显示当前大纲             | 仅显示最高级标题   |
-| 显示该大纲下一级的所有标题 | 显示所有的标题     |
-| 展开该大纲的所有内容       | 显示所有的内容     |
-
 | 快捷键 | 说明                       |
 |--------+----------------------------|
 | S-TAB  | 循环切换整个文档的大纲状态 |
 | TAB    | 循环切换光标所在大纲的状态 |
 
-*** 在大纲之间移动
-| 快捷键    | 说明                                 |
-|-----------+--------------------------------------|
-| C-c C-p/n | 上/下一标题(当前显示标题之间)        |
-| C-c C-b/f | 上/下一标题(同级标题之间)            |
-| C-c C-u   | 跳到上一级标题                       |
-| C-c C-j   | 切换到大纲浏览状态(方便定位, 不常用) |
+** 插入代码
+| <s+tab | 后接 sh python emacs-lisp org sql conf 等 |
+| <e+tab | EXAMPLE 其中内容完全按照 plain text 显示  |
+语法高亮需要在 .emacs 文件中加 (setq org-src-fontify-natively t)
 
-*** 缩进
-默认的大纲没有缩进, 可以用 M-x org-indent-mode 切换\\
-如果想让某个文件默认用缩进方式打开，可以在文件头部加#+startup:indent\\
-可以通过全局变量 org-startup-indented 来控制所有文件的缩进\\
+** 表格
+*** 创建和转换表格
+手动输入 | 或 |- 配合 tab 逐步创建
 
-** 超链接和图文混排
-*** 跳转
-| 快捷键 | 命令               | 说明                 |
-|--------+--------------------+----------------------|
-| C-c %  | org-mark-ring-push | 记录当前光标的位置   |
-| C-c &  | org-mark-ring-goto | 返回已记录的光标位置 |
-
-*** 创建 (外部) 链接
-| 自动链接                         |                                  |
-|----------------------------------+----------------------------------|
-| http://www.baidu.com/            | 网页                             |
-| file:/home/wfj/packages/utils.py | 绝对路径                         |
-| file:../org/emacs.org::40        | 定位到行, 当然, 可以是不同文件   |
-| file:emacs.org::jedi             | 定位到该词第一次出现的位置       |
-| file:emacs.org::#custom_id       | 定位到自定义id，还没学，先这样吧 |
-|                                  | 其他类型的链接不常用，不赘述     |
-
-显式指定链接, 可以用以下两种方式 (注意不能有空格):\\
-#+BEGIN_EXAMPLE
-[[http://www.baidu.com/][baidu]]
-[[link]]
-#+END_EXAMPLE
-#+BEGIN_SRC org
-[[http://www.baidu.com/][baidu]]
-[[link]]
-#+END_SRC
-
-| 快捷键  | 命令              | 说明     |
-|---------+-------------------+----------|
-| C-c C-l | org-insert-link   | 修改链接 |
-| C-c C-o | org-open-at-point | 打开链接 |
-也可以通过光标移到链接最后backspace后手动编辑\\
-
-*** 内部链接
-定位锚点 (anchor)<<anchor 1>>, 然后就可以像使用链接一样使用它了\\
-四种类型的注脚
-#+BEGIN_EXAMPLE
-注脚1[fn:1], 注脚2[fn:注脚2], 注脚3[fn::注脚详情后三个回车或新标题出现才能继续输入正文内容, 否则会被视为详情], 注脚4[fn:注脚4:[[anchor 1][猛击回锚点]]]
-[fn:注脚4] 有了描述的注脚, 不能再添加详情, 所以这段在文章最后是看不见的
-#+END_EXAMPLE
-注脚1[fn:1], 注脚2[fn:注脚2], 注脚3[fn::注脚详情后三个回车或新标题出现才能继续输入正文内容, 否则会被视为详情], 注脚4[fn:注脚4:[[anchor 1][猛击回锚点]]]
-[fn:1] 注脚详情会显示在文章最后, 通过 C-c C-o 可在注脚和详情之间来回跳转
-[fn:注脚2] 添加注脚的时候中括号不能顶格, 但定义注脚的时候必须顶格写
-[fn:注脚4] 有了描述的注脚, 不能再添加详情, 所以这段在文章最后是看不见的
-
-*** 显示图片
-现在还不需要, 据说挺折腾的, 以后再说
-
-** 轻量级标记语言
-*** 字体
-| **粗体**   |            |
-| /斜体/     |            |
-| +删除线+   |            |
-| _下划线_   |            |
-| 下标_2     |            |
-| 上标^2     |            |
-| =verbatim= | plain text |
-| ~code~     | plain text |
-
-*** 表格
-**** 创建和转换表格
-| 快捷键   | 命令             | 说明                                             |
-|----------+------------------+--------------------------------------------------|
-| C-c 竖线 |                  | 创建 Columns x Rows 的表格 或 转换选中区域成表格 |
-|          | org-table-export | 光标在表格内就行, 不用选中                       |
-也可以手动输入 | 或 |- 配合 tab 逐步创建
-
-**** 调整和区域移动
+*** 调整和区域移动
 | 快捷键  | 说明                           |
 |---------+--------------------------------|
 | C-c C-c | 调整表格，不移动光标           |
@@ -466,7 +117,7 @@ paragarph 移动的方式, 暂时不加入 .emacs
 | S-Tab   | 移动到上一区域                 |
 | RET     | 移动到下一行，必要时新建一行   |
 
-**** 编辑行和列
+*** 编辑行和列
 | 快捷键         | 说明                             |
 |----------------+----------------------------------|
 | M-LEFT/RIGHT   | 移动列(分隔线属于前一列)         |
@@ -477,100 +128,53 @@ paragarph 移动的方式, 暂时不加入 .emacs
 | C-c -          | 添加水平分割线                   |
 | C-c RET        | 添加水平分割线并跳到下一行       |
 
-**** 最大列宽和分组 (竖线)
-中英文混排的话可能会有一格偏差\\
-<l>, <c>, <r> 表示对齐方式, 需要在文章头加 #+align, 可以和列宽连用, 如 <r10>
-| <24>                      |     |              |              |    |
-| /                         | <   |              | >            | <> |
-|---------------------------+-----+--------------+--------------+----|
-| '(font-lock-string-face   | ((t | (:foreground | "#ffa07a"))) | t) |
-| '(font-lock-comment-face  | ((t | (:foreground | "#66cd00"))) | t) |
-| '(font-lock-constant-face | ((t | (:foreground | "#ffb90f"))) | t) |
-| '(font-lock-variable-name-face | ((t | (:foreground | "#ffec8b"))) | t) |
-| ;'(font-lock-function-name-face | ((t | (:foreground | "#63b8ff"))) | t) |
-| '(font-lock-function-name-face | ((t | (:foreground | "#87ceff"))) | t) |
-| '(font-lock-keyword-face  | ((t | (:foreground | "#00ffff"))) | t) |
-| '(font-lock-builtin-face  | ((t | (:foreground | "#ffbbff"))) | t) |
-| '(font-lock-type-face     | ((t | (:foreground | "#9aff9a"))) | t) |
-| 只是一段足够长的中文,不够长的话, 就再来一遍 |     |              |              |    |
-
-**** 公式 (未完成, 竟然还可以用 elisp 函数, 太无解了)
-@row$column 正数负数表示正数倒数, 0 表示当前行, @#, $# 表示行号, 列号\\
-# NOTE 负数表示当前行或列之前的行数, 而不是最大行列的之前多少, <> 分别表示最大最小, @<<$>>
-M-x org-table-edit-formulas 编辑公式能看到高亮范围\\
-Org-mode 默认使用的是 Emacs 中自带的 Calc 这个 package 来进行计算, M-x describe-function calc-TAB\\
-    # 基础算术方法: abs, sign, inv, sqrt, min, max，详见 Arithmetic Functions
-    # 对数方法: ln, exp, log，详见 Logarithmic Functions
-    # 三角函数: sin, cos, tahn，详见 Trigonometric/Hyperbolic Functions
-    # 随机数方法: random
-    # 向量/矩阵方法: vunion, vint, vsum, vmean, vmax, vmin, vmedian，详见 Vector/Matrix Functions
-#+NAME: 1
-| 1 |  2 |  3 |          4 |    5 |        |
-|---+----+----+------------+------+--------|
-| 2 | 91 | 39 | 0.42857143 | 9139 | #ERROR |
-| 3 |  1 | 96 |         96 |  196 |        |
-| 4 |  8 | 60 |        7.5 |  860 |        |
-| 5 | 70 | 89 |  1.2714286 | 7089 |        |
-| 6 | 18 | 22 |  1.2222222 | 1822 |        |
-| 7 | 10 | 42 |        4.2 | 1042 |        |
-| 8 | 11 |  2 | 0.18181818 |  112 |        |
-| 9 | 43 | 35 | 0.81395349 | 4335 |        |
-#+TBLFM: @1 = $#
-#+TBLFM: $1 = @#
-#+TBLFM: $4 = $3 / $2
-#+TBLFM: $5 = '(concat $2..$3)
-#+TBLFM: @2$6 = '(calc-vector-variance @2$2..@-1$2)
-
-(calc-vector-variance '(1 2 3))
-
-#+TBLFM: @9$2 = vsum(@2..@-1)
-#+TBLFM: $4 = $3 / $2 * $2
-
-|   | 2 | 3 | 4 | 5 |
-|---+---+---+---+---|
-|   |   |   |   |   |
-#+TBLFM: @1 = '(identity remote(1, @$#$1))
-#+TBLFM: @1 = remote(1, @$#$1)
-
-*** 数学公式
-输入 \, 然后 M-x pcomplete, 会弹出 org-mode 自带的特殊字符, 可能需要这一样之后没有字符
-TODO: 语法类似 mathjax 和 latex
-
-*** 段落
-对于单个回车换行的文本, 认为其属于同一个段落 (相当于回车改成空格), 若要换行, 可以连用两个回车, 或在段末加 =\\=
-
-*** 列表
-org能够识别有序列表, 无序列表和描述列表
+** 列表
+org 能够识别有序列表, 无序列表和描述列表
 - 无序列表以 '-', '+' 或 '*' (不能顶格)开头, 这些符号可以混用
 + 有序列表以 '1.' 或 '1)' 开头
 - 描述列表用 '::' 将项和描述分开, 这个还没搞明白
 - 有序列表和无序列表都以缩进表示层级, 相同的缩进表示同一级
 
-| 快捷键         | 说明                     |
-|----------------+--------------------------|
-| TAB            | 折叠列表项               |
-| M-RET          | 插入项（自动对齐）       |
-| M-S-RET        | 插入带复选框的项         |
-| M-S-UP/DOWN    | 移动列表项               |
-| M-LEFT/RIGHT   | 升/降列表项，不包括子项  |
-| M-S-LEFT/RIGHT | 升/降列表项，包括子项    |
-| C-c C-c        | 改变复选框状态           |
-| C-c -          | 更换列表标记（循环切换） |
-其中移动表示改变次序，升降表示改变层级
+** 数学公式
+输入 \ 然后 M-x pcomplete, 会弹出特殊字符 buffer
+语法类似 mathjax 和 latex, 有的可能需要用 $ 包围
 
-*** 分隔线
+** 文字修饰
+详见 M-x describe-variable org-emphasis-alist
+*加粗*
+_下划线_
+/斜体/
++删除+
+
+** 分隔线
 五条短线或以上显示为分隔线
 -----
 
-** +标签 (tag)+
-** 插入模板
-| <s+tab | 后接 sh python emacs-lisp org sql C C++ 等 |
-| <e+tab | EXAMPLE 其中内容完全按照 plain text 显示   |
-语法高亮需要在 .emacs 文件中加 (setq org-src-fontify-natively t)
+** 导出
+配置详见我的 my-org.el
+快捷键 C-c C-e 之后根据需要导出的类型选择
++ html
++ pdf
++ slide (beamer)
+*** beamer
+TODO: 用过几次, 当时没做笔记, 以后再用的时候再修改该内容
+FIXME: 第一次 C-c C-e 会没有选项, 需要 M-x org-beamer-export-to-pdf 一下
+
+#+BEAMER_THEME: Madrid
+右下角导航:
+1. 同滚轮
+2. 整页翻
+3.4. 正向是按 outline
+
+TODO: :BEAMER_ENV: againframe 效果
+
+** 别的地方用 org 表格
+M-x orgtbl-mode (再次输入关闭) (org-table minor mode)
+NOTE: 开了这个模式的话, 自动补全的回车选中就失灵了 (直接回车), 而且 jedi 跳转速度有时候会很慢, 反正要用的时候再开就好
 
 * eshell
 为什么选择 eshell
-+ 配合 outline-minor-mode 使用, 效果极佳
++ +配合 outline-minor-mode 使用, 效果极佳+
 + man 命令会在一个新的 buffer 打开帮助文档 (这个可以用 M-x man 代替)
 + 受限查找
 + 历史记录管理较容易 (过滤等)
@@ -669,313 +273,110 @@ org能够识别有序列表, 无序列表和描述列表
 | % m     | ibuffer-mark-by-mode-regexp         |                             |
 | % n     | ibuffer-mark-by-name-regexp         |                             |
 
-相比 list-buffers, filename 和 process 显示地更好\\
-相比 dired-mode, mark 要注意以下几点:\\
+相比 list-buffers, filename 和 process 显示地更好
+相比 dired-mode, mark 要注意以下几点:
 1. dired-mode 需要 mark 一些文件进行统一操作, 比如 chmod 等, 感觉这对 buffers 来说只有删除这一个选择
 2. 无法选中进行 mark
 3. 删除 buffer 时的提示很烦人, 修改源码中的 :dangerous t, 然后重新 byte-compile-file 即可
 
-* commands summary
-** help
-| 快捷键 | 命令               | 说明     |
-|--------+--------------------+----------|
-| C-h    | help-command       |          |
-| C-h b  | describe-bindings  |          |
-| C-h f  | describe-function  |          |
-| C-h v  | describe-variable  |          |
-| C-h m  | describe-mode      |          |
-| C-h k  | describe-key       |          |
-| C-h t  | help-with-tutorial |          |
-| C-h i  | info               | 帮助文档 |
+* python-mode
+** python-mode 的一些说明
+emacs25 之后 C-c C-s 和 C-c C-r 不再能够调用 run-python,
+需要先 C-c C-p 才行, 而且 C-c C-p 之前需要加 prefix command
+才能调出 dedicated process
+emacs24.5 C-c C-c 等带前缀的话, 可以让 if __name__ == '__main__' 块内的代码运行, 默认不运行
 
-** file handling
-| 快捷键  | 命令                    |
-|---------+-------------------------|
-| C-x C-f | find-file               |
-| C-x C-r | find-file-read-only     |
-| C-x C-q | read-only-mode          |
-| C-x C-v | find-alternate-file     |
-| C-x C-s | save-buffer             |
-| C-x s   | save-some-buffer        |
-| C-x k   | kill-buffer             |
-| C-x C-c | save-buffers-kill-emacs |
-| C-x C-w | write-file              |
-|---------+-------------------------|
-| C-x i   | insert-file             |
+** 补全
+python mode 的文件如果有打开解释器的话, 按 ESC -> TAB, 会在 *Completions* buffer 打开所有的补全, 就像在解释器里直接按 TAB 一样
+如果不想依托于文件就打开解释器, 可以直接 M-x run-python
 
-** cursor movement
-| 快捷键 | 命令                | 说明                        |
-|--------+---------------------+-----------------------------|
-| C-p    | previous-line       |                             |
-| C-n    | next-line           |                             |
-| C-b    | backward-char       |                             |
-| C-f    | forward-char        |                             |
-| M-b    | backward-word       |                             |
-| M-f    | forward-word        |                             |
-| C-a    | beginning-of-line   |                             |
-| C-e    | end-of-line         |                             |
-| M-<    | beginning-of-buffer |                             |
-| M->    | end-of-buffer       |                             |
-| C-v    | scroll-up           |                             |
-| M-v    | scroll-down         |                             |
-| M-}    | forward-paragraph   | rebind to M-]               |
-| M-{    | backward-paragraph  | rebind to M-[               |
-| C-M-n  | forward-list        | forward across parentheses  |
-| C-M-p  | backward-list       | backward across parentheses |
-| C-l    | recenter            |                             |
-| M-g g  | goto-line           |                             |
-|--------+---------------------+-----------------------------|
-| M-g c  | goto-char           | the position of buffer      |
-| M-a    | backward-sentence   |                             |
-| M-e    | forward-sentence    |                             |
-| C-x [  | backward-page       |                             |
-| C-x ]  | forward-page        |                             |
+** emacs python-mode 卡顿原因查找
+M-x profiler-start 做那些很卡的操作
+M-x profiler-report 看结果, 发现是字体高亮的问题
 
-** prefix
-| 快捷键  | 命令               | 说明                 |
-|---------+--------------------+----------------------|
-| M-NUM   | digit-argument     |                      |
-| C-NUM   | digit-argument     |                      |
-| C--     | negative-argument  |                      |
-| C-u NUM | universal-argument | support all platform |
+** 修改
+基于以上原因, 我对 python-mode 作了一些修改:
 
-** delete copy and paste
-| 快捷键  | 命令                    |
-|---------+-------------------------|
-| C-y     | yank                    |
-| M-y     | yank-pop                |
-| C-w     | kill-region             |
-| M-w     | kill-ring-save          |
-| C-d     | delete-char             |
-| M-d     | kill-word               |
-| DEL     | delete-backward-char    |
-| M-DEL   | backward-kill-word      |
-| C-k     | kill-line               |
-|---------+-------------------------|
-| M-k     | kill-sentence           |
-| C-x DEL | backward-kill-sentence  |
-|         | kill-paragraph          |
-|         | backward-kill-paragraph |
+*** 打开文件
+M-x describe-function RET python-shell-send TAB 通过链接进入文件所在位置,
+C-v 加 /sudo:: 前缀重新打开
 
-** search and replace
-| 快捷键  | 命令                    |
-|---------+-------------------------|
-| C-s     | isearch-forward         |
-| C-r     | isearch-backward        |
-| C-M-s   | isearch-forward-regexp  |
-| C-M-r   | isearch-backward-regexp |
-| ENTER   | isearch-exit            |
-| C-g     | keyboard-quit           |
-| DEL     | isearch-delete-char     |
-|         | replace-string          |
-|         | replace-regexp          |
-| M-%     | query-replace           |
-| C-M-%   | query-replace-regexp    |
-|---------+-------------------------|
-| C-s C-w | isearch-yank-word       |
-| C-s C-y | isearch-yank-line       |
-| C-s M-y | isearch-yank-kill       |
-| C-s C-s | isearch-repeat-forward  |
-| C-r C-r | isearch-repeat-backward |
+*** 修改
++ 注释 assignment 部分 (特别慢)
++ 给所有赋值操作符 font-lock-builtin-face
++ 添加, 修改了几个关键词
 
-** regions
-| 快捷键         | 命令                    | 说明              |
-|----------------+-------------------------+-------------------|
-| C-Space or C-@ | set-mark-command        |                   |
-| C-x C-x        | exchange-point-and-mark |                   |
-| C-w            | kill-region             |                   |
-| M-w            | kill-ring-save          |                   |
-| M-@            | mark-word               | from current char |
-|                | mark-end-of-paragraph   | from current char |
-| M-h            | mark-paragraph          |                   |
-| C-x C-p        | mark-page               |                   |
-| C-x h          | mark-whole-buffer       |                   |
+*** 编译
+当前buffer, M-x byte-compile-file RET python.el.gz 无报错则成功
 
-** buffers and windows
-| 快捷键  | 命令                        | 说明                |
-|---------+-----------------------------+---------------------|
-| C-x b   | switch-to-buffer            |                     |
-| C-x C-b | list-buffers                | see * list-buffers  |
-|---------+-----------------------------+---------------------|
-| C-x 0   | delete-window               |                     |
-| C-x 1   | delete-other-windows        |                     |
-| C-x 2   | split-window-below          |                     |
-| C-x 3   | split-window-right          |                     |
-| C-x o   | other-window                |                     |
-|---------+-----------------------------+---------------------|
-|         | balance-windows             |                     |
-|         | shrink-window               | usually with prefix |
-|         | shrink-window-horizontally  |                     |
-|         | enlarge-window              |                     |
-|         | enlarge-window-horizontally |                     |
+* term-mode
+M-x term 可以跑一个 fully functional 的 terminal, (我是在研究如何用 windows 下的 emacs 跑 ubuntu on windows 的 shell 时, 找资料发现的, 可惜的是 windows 下的 terminal 都不能用这个模式)
+很长一段时间我以为是所有的 emacs 快捷键都没用了, 那还怎么玩 (M-x 都不行)
+其实不是, term-mode 有两种输入模式 line-mode 和 char-mode
+简单来说 line-mode 就是普通的 emacs buffer, 按回车生效, char-mode 输入的每个字符都直接发送给终端, 所以 emacs 的快捷键都失效了 (除了 C-c 前缀的, 如下), 默认的就是 char-mode
+| C-c C-j | term-line-mode        | char-mode 很少有生效的按键, 实现为 toggle |
+| C-c C-k | term-char-mode        | 谁设计的快捷键这么难记                    |
+|---------+-----------------------+-------------------------------------------|
+| C-c C-c | term-interrupt-subjob |                                           |
+| C-c C-z | term-stop-subjob      |                                           |
+| C-c C-p | term-previous-prompt  |                                           |
+| C-c C-n | term-next-prompt      |                                           |
+NOTE: 其实我也不太在意多按一个回车键, 和 emacs 全局快捷键相比不值一提, 就把默认的改成 line-mode 了
 
-** +frames (i use emacs always in one frame)+
-| 快捷键    | 命令                            |
-|-----------+---------------------------------|
-| C-x 5 C-o | display-buffer-other-frame      |
-| C-x 5 C-f | find-file-other-frame           |
-| C-x 5 f   | find-file-other-frame           |
-| C-x 5 b   | switch-to-buffer-other-frame    |
-| C-x 5 o   | other-frame                     |
-| C-x 5 r   | find-file-read-only-other-frame |
-| C-x 5 b   | switch-to-buffer-other-frame    |
-| C-x 5 f   | find-file-other-frame           |
-| C-x 5 0   | delete-frame                    |
-| C-x 5 1   | delete-other-frames             |
-|-----------+---------------------------------|
-| C-x 5 2   | make-frame-command              |
-| C-x 5 d   | dired-other-frame               |
-| C-x 5 m   | compose-mail-other-frame        |
-| C-x 5 .   | find-tag-other-frame            |
+* emacs for mysql
+配置详见 emacs_init/my-sql.el
+0. 运行 M-x sql-mysql
+1. 密码设好了的话就不用再输密码了, 直接回车就行
+2. 因为有 history 存在, 可以在输入界面 M-p/n 选择历史记录
+3. 需要打开多个的话加前缀再 M-x
+4. sql-mysql-options -A 表示关闭表名字段名的 auto-completion, 我试了默认情况也不能补全, 可能是用法不对
+5. 虽然开始时要输入数据库名, 但进入之后还是可以用 use database_name; 改变
+6. 常用操作, 如下:
+| C-c C-c | comint-interrupt-subjob |
+| C-c C-z | comint-stop-subjob      |
+| C-c C-p | comint-previous-prompt  |
+| C-c C-n | comint-next-prompt      |
+| C-c M-o | comint-clear-buffer     |
+| M-n     | comint-previous-input   |
+| M-p     | comint-next-input       |
 
-** encoding
-| 快捷键         | 命令                             | 特殊说明             |
-|----------------+----------------------------------+----------------------|
-| C-x RET r 编码 | revert-buffer-with-coding-system | 按该编码重新打开文件 |
-| C-x RET f 编码 | set-buffer-file-coding-system    | 按该编码重新保存     |
+NOTE: 如果多行复制过来运行的话, 别忘了最后加分号
 
-** character
-| 快捷键 | 命令            | 特殊说明                             |
-|--------+-----------------+--------------------------------------|
-| M-l    | downcase-word   | lower, 视当前光标为第一个字母        |
-| M-u    | upcase-word     |                                      |
-| M-c    | capitalize-word |                                      |
-|--------+-----------------+--------------------------------------|
-| C-t    | transpose-chars | 当前光标和前一个交换, 光标向后移一位 |
+* regular expression
+|       |                         |                              |
+|-------+-------------------------+------------------------------|
+|       | re-builder              | string (use \\ instead of \) |
+| C-M-s | isearch-forward-regexp  |                              |
+| C-M-r | isearch-backward-regexp |                              |
 
-* for windows
-** 设置环境变量 HOME, 效果类似 linux 的 home
-** +修改注册表 (可能会有问题, 不用)+
-在如下注册表中创建 GNU\Emacs\HOME (字符串值, 如: E:\emacs-24.5)
-#+BEGIN_EXAMPLE
-HKEY_LOCAL_MACHINE\SOFTWARE\
-HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\ (if x64)
-#+END_EXAMPLE
-或者运行 addpm.exe
+1. ^ $ . * + ? [ ] ( ) { } \ | [-], 作用和一般正则表达式基本相同, 不支持零宽断言等高级语法
+2. 相同
+| \w \W | 匹配任何构成词的字符, 由语法表决定   |
+| \1    | 匹配捕获                             |
+| \b \B | 匹配空串, 但仅在一个词的开始或结尾处 |
+| \< \> | 匹配空串, 但仅在一个词的开始或结尾处 |
+3. 与一般正则表达式区别
++ 大小写不敏感
++ ( ) { } | 匹配字符时不用转义, 特殊字符时反而要转义
++ \ 在 [] 中不是特殊字符, 比如 "[\n]" (字符串转义) 而不是 "[\\n]" (匹配 \ 或 n)
++ \d \D 不能匹配数字
++ ^ $ 匹配行首和行尾, \` \' 匹配 buffer 的头和尾
++ \sC \SC, C in {w(\w), -(\s),  (\s), .(普通标点符号)}
++ \cC \CC, C 详见 M-x describe-categories
 
-** hhkb jp remap
-在如下注册表中创建二进制值 Scancode Map, 效果同 linux 下的 .xmodmap
-#+BEGIN_EXAMPLE
-HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout
-#+END_EXAMPLE
-值为:
-#+BEGIN_EXAMPLE
-00,00,00,00,00,00,00,00,04,00,00,00,38,00,7B,00,1d,00,79,00,29,00,73,00,00,00,00,00
-#+END_EXAMPLE
-
-https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
-https://www.win.tue.nl/~aeb/linux/kbd/scancodes-8.html#japanese
-
-** 关于编码
-先是:
-#+BEGIN_SRC emacs-lisp
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-#+END_SRC
-
-然后你会发现, interpreter 中中文出错:
-#+BEGIN_SRC python
-import sys
-print(sys.stdin.encoding) # 的编码不是 utf-8, stdout stderr 同
-#+END_SRC
-可以每次手动加:
-#+BEGIN_SRC python
-import sys
-sys.stdin = codecs.getreader('utf-8')(sys.stdin.buffer)
-sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
-sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer)
-#+END_SRC
-太麻烦, 所以加到解释器进程启动的时候, 即 python.el 的 python-shell-make-comint 中, 详见我改过的 python.el
-
-* possible ways may disable emacs shortcuts
-** system shortcuts
+* why shortcuts did not work
+** system shortcuts conflict
 Linux is customizable, while windows is hard to modify, but tricks still exist (for example when default language is English, C-SPC can set mark, while chinese can't).
 
 ** other global applications, for example fcitx
 这些快捷键比 emacs 拥有更高的优先级, 输入法显然也是
 
-这个问题困扰了我很久, 机缘巧合才发现的, C-5, C-M-p, C-M-s C-M-b 等等快捷键, 可以在 fcitx configuration 中清空所有非必要的快捷键:
+这个问题困扰了我很久, 机缘巧合才发现的, C-5, C-M-p, C-M-s C-M-b 等等快捷键, 可以在 fcitx configuration 中清空所有非必要的快捷键
 
 NOTE: Keyboard - English (US) (Unavailable) 也有快捷键, 起不起作用就不知道了
-NOTE: 关于如何清空, 日文 HHKB 的 BS 键的左边那个键就能清空快捷键 (可能是因为没有键盘映射)
+NOTE: 按 ESC 清空
 NOTE: 所有的修改都保存在 ~/.config/fcitx (有一次出现了数字键选择词语就会崩溃, 删除这个文件夹就行了)
 
-顺便整理下必须的 addon:
-| DBus support        |       |
-| X11 support         |       |
-| Fcitx DBus Fronted  |       |
-| Keyboard Layout     | 英文  |
-| Fcitx XIM Frontend  | emacs |
-| Remote              |       |
-|---------------------+-------|
-| Clipboard           |       |
-| Spell               |       |
-| LibPinyin           |       |
-| Classic             | skin  |
-| Fullwidth Character |       |
-
-
-
-1. 用于查询的数据, 需要来源于结构化数据或结构比较统一的非结构化数据, 否则获取数据会很低效而且也很容易出现错误
-2. 5w 维度应该是稀疏的, 维度可以作为数据库的一列, 上百个标签是 01 变量, 可以存为二进制整数每 64 个作为一列, 也可以每个标签作为一列 (应该没什么问题)
-3. 机器人稿件, 纯机器写的 (不人为给格式) 肯定是不行的, 要写好的话会有很多人工的工作
-4. 基于 H5 的用户互动, 如果是用户和用户的, 应该没什么问题; 但如果是用户和机器互动, 就会很难, 涉及到语义理解, 语句生成和自动数据库查找
-5. 直播涉及到 p2p 加速等, 要做好很难
-6. 其他的应该都还行
-
-* pyim
-** 配置和更新 melpa 源
-#+BEGIN_SRC emacs-lisp
-(require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (setq package-archives
-	(list (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")))))
-(package-initialize)
-#+END_SRC
-M-x package-list-packages 确保已经得到可用的包列表
-NOTE：我用的是 debian testing, 非 stable 源会报错
-
-** 安装
-M-x package-install RET pyim
-
-** 配置
-
-** 快捷键
-** 功能
-*** 中间有拼音打错，直接(Ctrl-G (当前的第一个会被选中) 或回车 (全部是英文))，通过 emacs 方便的移动快速修改，并用 M-x pyim-convert-string-at-point 重新唤出，这个转化是在没有激活 pyim 时也能用的，且这个操作会激活 pyim
-*** 全角半角变化
-pyim-punctuation-toggle
-#+BEGIN_SRC emacs-lisp
-(setq pyim-punctuation-translate-p '(yes no auto))   ;使用全角标点。
-(setq pyim-punctuation-translate-p '(no yes auto))   ;使用半角标点。
-(setq pyim-punctuation-translate-p '(auto yes no))   ;中文使用全角标点，英文使用半角标点。
-#+END_SRC
-貌似不起作用，要最新版？
-*** 加词删词
-pyim-create-word-from-selection
-pyim-delete-word
-C-c 取消所有输入
-
-** 缺点
-只有第一页是按词频排序的，所以候选词尽量多吧，设为 9, 是10不是0
-全角半角规则不好
-你说好不好莴shuo'bu'hao
-pyim-probe-dynamic-english #没有
-
-(use-package pyim
-	     :bind
-	     ("M-j" . 'pyim-convert-string-at-point))
-
-
-;TODO: 修改 noto sans mono cjk sc 变成方块字，然后加上 monaco
-是关于 buffer 取整的，我感觉还是安逸个键会快一点
-中文zhu'yin'ran'hou'xiu'gai双行显示可是可以的你们说呢是吧可惜不是你等我到最后
-不能打太多，行数也相等
-zhongwenhaixing，nimenshuone，方块字必须的
 * package-install
 #+BEGIN_SRC emacs-lisp
 (require 'package)
@@ -1035,3 +436,14 @@ M-x jedi:install-server
 M-x lsp-install-server ret rust-analyzer ret
 
 保存在 ~/.emacs.d/.cache/lsp/rust/
+
+** install htmlize
+* TODO list
+对写代码来说可能没什么大用, 但感觉还是有很多潜在的用途, 学习一下
+#+SEQ_TODO: FIXME(m) | FIXED(f)
+#+SEQ_TODO: TODO(T!) | DONE(D@)  CANCELED(C@/!)
+https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML
+http://orgmode.org/mathjax/MathJax.js
+
+** eww
+可以说是最好用的夜间模式了, 但是还有很多问题, 无法达到实际实用的程度, 比如 org-mode 导出的网页, mathjax 渲染, 图片排版等等

@@ -1,0 +1,153 @@
+* for windows (do not use emacs on windows)
+** 设置环境变量 HOME, 效果类似 linux 的 home
+** +修改注册表 (可能会有问题, 不用)+
+在如下注册表中创建 GNU\Emacs\HOME (字符串值, 如: E:\emacs-24.5)
+#+BEGIN_EXAMPLE
+HKEY_LOCAL_MACHINE\SOFTWARE\
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\ (if x64)
+#+END_EXAMPLE
+或者运行 addpm.exe
+
+** hhkb jp remap
+在如下注册表中创建二进制值 Scancode Map, 效果同 linux 下的 .xmodmap
+#+BEGIN_EXAMPLE
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout
+#+END_EXAMPLE
+值为:
+#+BEGIN_EXAMPLE
+00,00,00,00,00,00,00,00,04,00,00,00,38,00,7B,00,1d,00,79,00,29,00,73,00,00,00,00,00
+#+END_EXAMPLE
+
+https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
+https://www.win.tue.nl/~aeb/linux/kbd/scancodes-8.html#japanese
+
+** 关于编码
+先是:
+#+BEGIN_SRC emacs-lisp
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+#+END_SRC
+
+然后你会发现, interpreter 中中文出错:
+#+BEGIN_SRC python
+import sys
+print(sys.stdin.encoding) # 的编码不是 utf-8, stdout stderr 同
+#+END_SRC
+可以每次手动加:
+#+BEGIN_SRC python
+import sys
+sys.stdin = codecs.getreader('utf-8')(sys.stdin.buffer)
+sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
+sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer)
+#+END_SRC
+太麻烦, 所以加到解释器进程启动的时候, 即 python.el 的 python-shell-make-comint 中, 详见我改过的 python.el
+
+* pyim
+** 配置和更新 melpa 源
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  (setq package-archives
+	(list (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")))))
+(package-initialize)
+#+END_SRC
+M-x package-list-packages 确保已经得到可用的包列表
+NOTE：我用的是 debian testing, 非 stable 源会报错
+
+** 安装
+M-x package-install RET pyim
+
+** 功能
+*** 中间有拼音打错，直接(Ctrl-G (当前的第一个会被选中) 或回车 (全部是英文))，通过 emacs 方便的移动快速修改，并用 M-x pyim-convert-string-at-point 重新唤出，这个转化是在没有激活 pyim 时也能用的，且这个操作会激活 pyim
+*** 全角半角变化
+pyim-punctuation-toggle
+#+BEGIN_SRC emacs-lisp
+(setq pyim-punctuation-translate-p '(yes no auto))   ;使用全角标点。
+(setq pyim-punctuation-translate-p '(no yes auto))   ;使用半角标点。
+(setq pyim-punctuation-translate-p '(auto yes no))   ;中文使用全角标点，英文使用半角标点。
+#+END_SRC
+貌似不起作用，要最新版？
+
+*** 加词删词
+pyim-create-word-from-selection
+pyim-delete-word
+C-c 取消所有输入
+
+** 缺点
+只有第一页是按词频排序的，所以候选词尽量多吧，设为 9, 是10不是0
+全角半角规则不好
+你说好不好莴shuo'bu'hao
+pyim-probe-dynamic-english #没有
+
+(use-package pyim
+	     :bind
+	     ("M-j" . 'pyim-convert-string-at-point))
+
+;TODO: 修改 noto sans mono cjk sc 变成方块字，然后加上 monaco
+是关于 buffer 取整的，我感觉还是安逸个键会快一点
+中文zhu'yin'ran'hou'xiu'gai双行显示可是可以的你们说呢是吧可惜不是你等我到最后
+不能打太多，行数也相等
+zhongwenhaixing，nimenshuone，方块字必须的
+
+* use emacs -nw or gui
+1. 重影问题, 明明很短的一个文件 M-</>, 也会有出现, 可以通过 M-x redraw-display 解决, 已经重写了 C-l 强制刷新
+2. 中英文混排等高等宽的问题, 通过自制字体完美解决
+3. 颜色相关, 26.1 已支持 24bit color
+
++打算再一次尝试 emacs -nw; 我记得原来是做过一个两者的比较, 好像有一些功能不能在 terminal 下实现, 所以放弃了, 现记录如下:+
+又一次尝试了 emacs -nw, 试了很多终端模拟器, 找了很多键绑定方法, 终于勉强能用:
+| 功能对比     | -nw                          | gui                          |
+|--------------+------------------------------+------------------------------|
+| 半透明效果   | 0.9, 我的垃圾显示器都超棒    | alpha + sRGB 打平            |
+| 背景色       | 不透明                       | 仍然透明                     |
+|--------------+------------------------------+------------------------------|
+| 与剪贴板交互 | 不方便, C-V (注意是大写)     | 可以                         |
+| +光标        | 不会改变前景色, 导致看不清+  |                              |
+|              | popup 显示移位 (极少出现)    |                              |
+|              | 删除线无法显示               |                              |
+| 半透明选中   |                              | 会显示下一层的内容, 影响观看 |
+|              | +C-tab jedi:complete 冲突+   |                              |
+|              | +与 org-mode 表格快捷键冲突+ |                              |
+|              | popup 有不小的几率崩溃       |                              |
+|              | ediff, vc-ediff 完全没法用   |                              |
+|--------------+------------------------------+------------------------------|
+|              | +致命的缺点导致不能日常使用+ |                              |
+
+** 快捷键不对的原因和解决方案
+M-x describe-bindings 在最后的 input decoding map translations 页, 可以看到 gui 的键绑定很少, 而 -nw 有很多
+可以看到 M-[ 是很多 xterm control sequences (正好我试过的所有终端模拟器都有这个问题, 除了 urxvt, 但是它显示的中文实在太小, 不能容忍)
+而我为这个快捷键绑定了命令, terminal 就会认为 xterm control sequences 到此结束了, 出现的结果也是 backward 了一个段落的距离然后打印出剩余的字符
+(只是如果我不知道这些就根本不会往那个地方想)
+我想这也是为什么 emacs 会设置 M-{ 而不是 M-[ 为 backward-paragraph
+
+一个有用的技巧, 虽然对解决这个问题没有起到什么作用: 在 command line 下输入 cat 回车, 再输入就会显示输入的真实按键
+
+Ctrl 的组合按键还是有问题, 比如 tab 和数字键:
+1. 可能是原来那些按键是有 function key map 的, 然后 translations 是先 function 再 encoding?
+2. 终端模拟器的设计问题
+
+不正常的按键 C--, C-TAB, C-0 .. C-9, 除了 TAB 都可以用 ESC prefix 代替, 习惯了 alt + tab, 再按 alt + 4 关闭应用
+正常的按键 C-/ C-SPC C-\
+这两个键是被我用作 xfce appfinder 的全局快捷键, 正常 C-; C-'
+f1 .. f12 我是不用的, 相关组合键不知道有没有问题
+C-a .. C-y 都正常工作
+NOTE: C-z 会结束关掉整个 emacs (可能没关掉, 因为对应文件的 pid 还在), 慎重慎重慎重, 所以我的选择是解除这个键绑定
+一个相同遭遇的人 https://github.com/emacs-tw/emacs-101/blob/master/%E9%99%84%E9%8C%84B-%E7%B5%82%E7%AB%AF%E6%A9%9F%E4%B8%8B%E7%9A%84Emacs.org
+
+** clipboard
+复制的话自己写一个 interactive 函数调用 xsel 或 xclip 都行 (使用频率不高, 搜索我都是用自己写的 fast-search 的), 粘贴的话绑定为 C-M-y, 如果要把粘贴内容保存到 kill ring, 直接在粘贴完之后 C-w 即可, 应该也算完美解决
+
+** 光标
+terminalrc 文件设置 ColorCursor= (空值), 能解决光标不显示前景色的问题, 而且光标会随着所在行不同而改变颜色, 应该算是完美解决
+
+** 快速运行和全屏
+xfce appfinder 中为正则表达式 ^e$, 绑定命令 exo-open --launch TerminalEmulator emacs -nw 就能直接打开,
+可惜不能再加全屏参数, 不过手动为不同的屏幕设置 MiscDefaultGeometry= 默认大小即可, 这还能顺带解决 minibuffer 全屏时太高的问题
+设置了 MiscDefaultGeometry 之后, 再最大化窗口, minibuffer 正常了, 主要是 terminal 设计的就是不能显示半行
+
+** 崩溃问题
+几次崩溃经历都是在 xcfe4-terminal 中运行 emacs -nw 导致的, 反正现在用 appfinder 直接自定义命令打开 (没有外部的 terminal), 还没出现问题

@@ -1,62 +1,56 @@
 #+AUTHOR: wfj
 #+EMAIL: wufangjie1223@126.com
-#+HTML_HEAD_EXTRA: <style type="text/css"> body {padding-left: 21%; !important; background: #e3edcd !important;} #table-of-contents {position: fixed; width: 20%; height: 100%; top: 0; left: 0; overflow-y: scroll;} .org-src-container {color: #ffffff !important; backgrounhd: #131926 !important;} pre:before {color: #ffffff !important; background: #131926 !important;} i {color: #666666 !important;} </style>
-#+OPTIONS: ^:{} \\n:t email:t
+#+OPTIONS: ^:{} \n:t email:t
+#+HTML_HEAD_EXTRA: <style type="text/css"> body {padding-left: 26%; background: #e3edcd;} #table-of-contents {position: fixed; width: 25%; height: 100%; top: 0; left: 0; overflow-y: scroll; resize: horizontal;} i {color: #666666;} pre, pre.src:before {color: #ffffff; background: #131926;} </style>
+#+HTML_HEAD_EXTRA: <script type="text/javascript"> function adjust_html(){document.getElementsByTagName("body")[0].style.cssText="padding-left: "+(parseInt(document.getElementById("table-of-contents").style.width)+5)+"px; background: #e3edcd;"}; window.onload=function(){document.getElementById("table-of-contents").addEventListener("mouseup",adjust_html,true)}</script>
+#+HTML_HEAD_EXTRA: <style type="text/css"> mjx-mspace {white-space: normal;} </style>
 
-* elisp
-** s-expression (lisp 就是一堆 s 表达式?)
+* s-expression (lisp 就是一堆 s 表达式?)
 s-expression is classically defined inductively as
 1. an atom, or
 2. an expression of the form (x . y) where x and y are s-expressions.
 
-** 常用类型概述
-+ number
-  + integer
-  + float
-+ sequence
-  + list
-  + array
-    + string
-    + vector
-+ hash-table
-+ symbol
-
-# (以下我基本不用, 需要的时候再学)
-# array -> bool vector 和 char-table
-# symbol -> subr (built-in function in ‘C source code’, 包含 special form)
-#       |-> byte-code function (byte-compile)
-# record, 基本同 vector, 用于自定义类型
+* 常用类型概述
+|            |         |        | 我不用                                |
+|------------+---------+--------+---------------------------------------|
+| number     |         |        |                                       |
+|            | integer |        |                                       |
+|            | float   |        |                                       |
+|------------+---------+--------+---------------------------------------|
+| sequence   |         |        |                                       |
+|            | list    |        |                                       |
+|            | array   |        | bool vector, char-table               |
+|            |         | string |                                       |
+|            |         | vector |                                       |
+|------------+---------+--------+---------------------------------------|
+| hash-table |         |        |                                       |
+|------------+---------+--------+---------------------------------------|
+| symbol     |         |        | subr, byte-code function              |
+|            |         |        | record, 基本同 vector, 用于自定义类型 |
 
 NOTE 1: char 在 elisp 中完全等价于整数, char 很少单独用到, 一般用于字符串的元素 ?A ?\n
-
 NOTE 2: number 中 integer 和 float 是互补的, 非此即彼
-
 NOTE 4: 在 elisp 中 list 就是 cons cell 加 nil
-
 NOTE 5: vector 都是一维的, 定长, (据说索引快), 但仍然可以由不同类型的元素组成, 比如 [1 "two" 'qwert] => [1 "two" (quote qwert)]
-
 NOTE 6: symbol 好像就是别的语言的变量 (包括函数等)? 对 symbol 求值就是对 symbol 对应的 OBJECT 求值, 有一点区别就是就算没有定义变量, 只要不对 symbol 求值就不会有问题, 比如 'qwert 就是合法的
-
 NOTE 7: 只有数字, 字符串, vector, hash table 和 符号类型中的 nil 和 t (TODO: 待补充), 可以不断对自己求值, 且恒等于自己
-
 NOTE 8: 上述类型名后加一个 p 都是判断是否为本类型的函数, 除了 hash-table 是 hash-table-p
-
 NOTE 9: (type-of OBJECT) 查看类型, 返回的是 symbol (其实就是类型名, 属 symbol)
 #+BEGIN_SRC emacs-lisp
 (eq (type-of '(1 2 3)) 'cons) => t
 #+END_SRC
 上述例子的结果是 cons 而不是 list, 我认为是为了保证 nil 的类型的唯一性
 
-** 两个特殊的符号 nil, t
+* 两个特殊的符号 nil, t
 + 可以不断对自己求值, 且恒等于自己
 + 有常量的性质, 不能被赋别的值, 会抛出一个异常
-+ nil 和 () 完全等价, 只有用法上的区别, 一般要表示真假时用 nil, 而要表示空表时用 ().
++ nil 和 () 完全等价, 只有用法上的区别, 一般要表示真假时用 nil, 而要表示空表时用 ()
 + 表达式 (list), (quote nil) 以及它的语法糖 '() 的求值结果也是 nil, 但它们在求值前不是 nil, (本文中的所有 lisp OBJECT, 如果没有特别说明是的表达式的话, 都是表示求值后的结果)
 + null 函数专门用来判断是不是 nil
 
-** 七个最基本的操作符
+* 七个最基本的操作符
 这七个除了 cond 和 quote 是特殊形式 (special form), 其他都是函数
-*** car, cdr, cond
+** car, cdr, cond
 这三个最容易掌握
 #+BEGIN_SRC emacs-lisp
 (cdr nil) => nil
@@ -67,60 +61,63 @@ NOTE 9: (type-of OBJECT) 查看类型, 返回的是 symbol (其实就是类型�
 上面的第二行和第三行可以理解为空集和以空集为元素的集合
 第四行的解释详见 quote
 
-*** cons, atom
+** cons, atom
 + 理论上, list 是末项元素为 nil 的特殊 cons cell, 但 elisp 中一个 OBJECT 的 listp 为真当且仅当其 consp 为真或它就是 nil
 + consp 和 atom 互补
 + 综上, nil 是唯一一个用 atom 和 listp 作用都是 t 的 OBJECT
 
-*** eq
-+ (eq OBJ1 OBJ2) Return t if the two args are the same Lisp object.
-  可以用 C 语言是否为同一个引用来理解
-  elisp 中貌似只有整型 (别的 lisp 可能这个也是不同地址的), symbol 是固定内存地址的, 其他的显式写出表达式的时候都会构造出新的对象来
-  #+BEGIN_SRC emacs-lisp
-  (eq 97 ?a) => t
-  (eq 'eq 'eq) => t
-  (eq 3.2 3.2) => nil
-  (eq "hello" "hello") => nil
-  (eq "" "") => t ; 唯一例外, 为了节省空间
-  #+END_SRC
+** eq
+*** (eq OBJ1 OBJ2)
+Return t if the two args are the same Lisp object.
+可以用 C 语言是否为同一个引用来理解
+elisp 中貌似只有整型 (别的 lisp 可能这个也是不同地址的), symbol 是固定内存地址的, 其他的显式写出表达式的时候都会构造出新的对象来
+#+BEGIN_SRC emacs-lisp
+(eq 97 ?a) => t
+(eq 'eq 'eq) => t
+(eq 3.2 3.2) => nil
+(eq "hello" "hello") => nil
+(eq "" "") => t ; 唯一例外, 为了节省空间
+#+END_SRC
 
-+ eql
-  跟 eq 完全相同, 除了对于 number 型的 OBJECT 是通过比较数值而不是内存地址. NOTE: 整型和浮点型就算数值一样还是会返回 nil
-  #+BEGIN_SRC emacs-lisp
-  (eql 3.2 3.2) => t
-  (eql 0.0 0) => nil
-  #+END_SRC
+*** eql
+跟 eq 完全相同, 除了对于 number 型的 OBJECT 是通过比较数值而不是内存地址. NOTE: 整型和浮点型就算数值一样还是会返回 nil
+#+BEGIN_SRC emacs-lisp
+(eql 3.2 3.2) => t
+(eql 0.0 0) => nil
+#+END_SRC
 
-+ equal 只有当类型, 结构和元素完全相同时, 才返回 t.
-  #+BEGIN_SRC emacs-lisp
-  (equal 3.2 3.2) => t
-  (equal "hello" "hello") => t
-  (equal 0.0 0) => nil
-  (equal 'cons "cons") => nil
-  (equal '(1 2) (cons 1 2)) => nil
-  #+END_SRC
-  上面最后一条虽然 type-of 返回的类型一样, 但前者尾巴多一个 nil
+*** equal 只有当类型, 结构和元素完全相同时, 才返回 t.
+#+BEGIN_SRC emacs-lisp
+(equal 3.2 3.2) => t
+(equal "hello" "hello") => t
+(equal 0.0 0) => nil
+(equal 'cons "cons") => nil
+(equal '(1 2) (cons 1 2)) => nil
+#+END_SRC
+上面最后一条虽然 type-of 返回的类型一样, 但前者尾巴多一个 nil
 
-+ equalp
-  跟 equal 完全相同, 除了整型可以和浮点型相等, 字符串忽略大小写
-  #+BEGIN_SRC
-  (equalp 0.0 0) => t
-  (equalp "hello" "HELLO") => t
-  (equalp 'cons "cons") => nil
-  #+END_SRC
+*** equalp
+跟 equal 完全相同, 除了整型可以和浮点型相等, 字符串忽略大小写
+#+BEGIN_SRC
+(equalp 0.0 0) => t
+(equalp "hello" "HELLO") => t
+(equalp 'cons "cons") => nil
+#+END_SRC
 
-+ 特殊类型的比较:
-  + = 用来比较数字或 marker (NOTE:TODO: 选中区域的位置, 如何转换)
-    (point-marker)
-    #+BEGIN_SRC emacs-lisp
-    (= 0.0 0) => t
-    #+END_SRC
-  + string-equal, string= 用来做字符串或 symbol (print names) 的比较:
-    #+BEGIN_SRC emacs-lisp
-    (string= 'cons "cons") => t
-    #+END_SRC
+*** =
+用来比较数字或 marker (NOTE:TODO: 选中区域的位置, 如何转换)
+(point-marker)
+#+BEGIN_SRC emacs-lisp
+(= 0.0 0) => t
+#+END_SRC
 
-*** quote
+*** string-equal, string=
+用来做字符串或 symbol (print names) 的比较:
+#+BEGIN_SRC emacs-lisp
+(string= 'cons "cons") => t
+#+END_SRC
+
+** quote
 不适用求值模型的特殊形式 (specific form), 只能有一个参数, 其作用就是不对后面的参数求值
 Warning: ‘quote’ does not construct its return value, but just returns
 the value that was **pre-constructed** by the Lisp reader.
@@ -139,7 +136,7 @@ backquote "`", 基本用法同 quote, 还有两个高级用法 (一般用于宏)
 + 配合 "," 使用, 表示 "," 之后的元素需要被求值, 即使 "," 在更深层的嵌套里, 也能起同样的作用
 + 配合 ",@" 使用表示求值并去括号
 
-** 求值模型
+* 求值模型
 1. substitution model
    To apply a compound procedure to arguments, evaluate the body of the procedure with each formal parameter replaced by the corresponding argument.
 2. environment model
@@ -147,13 +144,14 @@ backquote "`", 基本用法同 quote, 还有两个高级用法 (一般用于宏)
 
 NOTE: elisp 默认是不开启词法作用域, 有两种方法可以开启
 1. 在代码文件的头部加:
-   #+BEGIN_SRC emacs-lisp
-   ;;; -*- lexical-binding: t -*-
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t -*-
+#+END_SRC
+
 2. 或者在配置文件中设置 (setq lexical-binding t)
 但一般你无法控制别人的设置, 如果为了写包让别人用, 肯定是用第一种了, 除非以后全局就是词法作用域的
 
-*** 正则序 (normal order) 和应用序 (applicative order)
+** 正则序 (normal order) 和应用序 (applicative order)
 对于合法的替换模型, 正则序和应用序将求出同样的值
 应用序是先对各参数求值然后应用过程, 这样可以避免重复求值, 从而提高效率
 正则序则是通过展开过程, 把实参代替行参 (不求值) 直到不能再展开, 对于环境模型来说太过复杂, 但有其特殊的价值, SICP
@@ -161,8 +159,9 @@ NOTE: elisp 默认是不开启词法作用域, 有两种方法可以开启
 (defun p () (p))
 (defun test (x y) ; 报错证明是应用序
 #+END_SRC
-** 难点
-*** 再谈 symbol
+
+* 难点
+** 再谈 symbol
 Finding or adding a symbol with a certain name is called interning it, and the symbol is then called an interned symbol.
 | (symbolp (lambda () (print "hello world!"))) => nil |
 | (symbolp 1.2) => nil                                |
@@ -217,10 +216,9 @@ f => (lambda nil "it's variable!")
   (print count))
 (make-symbol "qwert") ; 不增加 obarray
 (intern "qwert") ; 回增加 obarray
-
 #+END_SRC
 
-*** macro
+** macro
 #+BEGIN_SRC emacs-lisp
 ;; 三个版本
 (defmacro for (var from init to final do &rest body)
@@ -259,7 +257,6 @@ f => (lambda nil "it's variable!")
 ;; 极端一点, 比如把上述 "max" 改成 "i"
 ;; macroexpand 出的结果看着好像不对, 但运行是对的, 对 symbol 的深刻理解
 
-
 ;; 与 c 语言的宏进行比较, 括号结构无需过多关注优先级的问题
 ;; 多次求值副作用和变量冲突问题两边都存在
 ;; 但 lisp 自带的 uninterned symbol 可以很好地解决变量冲突问题
@@ -282,7 +279,6 @@ f => (lambda nil "it's variable!")
         (setcar object condition))
     ))
 
-
 ;; expand and test
 (macroexpand '(for i from 1 to 3 do
 		   (setq square (* i i))
@@ -293,15 +289,15 @@ f => (lambda nil "it's variable!")
      (princ (format "\n%d %d" i square)))
 #+END_SRC
 
-** 语法
-*** print
+* 语法
+** print
 | message | (message FORMAT-STRING &rest ARGS)    | to *Message* buffer |
 | format  | (format STRING &rest OBJECTS)         |                     |
 | print   | (print OBJECT &optional PRINTCHARFUN) | newline around      |
 | prin1   |                                       | no newline around   |
 | princ   |                                       | for human reading   |
 
-*** math
+** math
 | 函数      | 用法                     |                              |
 |-----------+--------------------------+------------------------------|
 | sqrt      |                          |                              |
@@ -352,8 +348,6 @@ f => (lambda nil "it's variable!")
 #+END_SRC
 
 
-
-
 两个没什么用的函数 (自己实现没必要记):
 + (ldexp SGNFCAND EXPONENT)
   就是直接计算 SGNFCAND * 2 ** EXPONENT, 只要求 EXPONENT 为整数
@@ -370,13 +364,13 @@ f => (lambda nil "it's variable!")
 
 其他 (向量) 函数需要 `calc-math.el'
 
-*** logical
+** logical
 (booleanp OBJECT) OBJECT 是 t 或 nil 时返回 t, 否则返回 nil
 lisp 中只有 nil 是假, 其余均为真
 and, or, not 操作符进行逻辑运算
 数字的比较等于是 = 不等于是 /=, 其它比较同一般语言
 
-*** string
+** string
 | string                   |                                      |
 |--------------------------+--------------------------------------|
 | stringp                  |                                      |
@@ -392,10 +386,11 @@ and, or, not 操作符进行逻辑运算
 | replace-regexp-in-string |                                      |
 | downcase, upcase         |                                      |
 
-*** list
+** list
 一种特殊的列表 number-sequence
+#+BEGIN_SRC emacs-lisp
 (nth N LIST)
-(append &rest SEQUENCES) 把之前的列表的元素按肉眼顺序添到最后一个列表前
+(append &rest SEQUENCES) ; 把之前的列表的元素按肉眼顺序添到最后一个列表前
 
 (pop PLACE)
 (push NEWELT PLACE)
@@ -403,9 +398,10 @@ and, or, not 操作符进行逻辑运算
 (setcar CELL NEWCAR)
 (setcdr CELL NEWCDR)
 
-(nconc &rest LISTS) 最后一个可以不是 list, 可以理解为修改指针
+(nconc &rest LISTS) ; 最后一个可以不是 list, 可以理解为修改指针
+#+END_SRC
 
-*** control flow
+** control flow
 #+BEGIN_SRC emacs-lisp
 ;;;;;;;;;;;;;;;;;;;; Sequencing
 (progn
@@ -452,7 +448,7 @@ and, or, not 操作符进行逻辑运算
   )
 #+END_SRC
 
-**** generators (TODO)
+*** generators (TODO)
 | iter-defun      |
 | iter-lambda     |
 | iter-yield      |
@@ -462,7 +458,7 @@ and, or, not 操作符进行逻辑运算
 | iter-next       |
 | iter-close      |
 
-*** variable
+** variable
 | defvar   | (defconst SYMBOL &optional ININVALUE DOCSTRING) |
 | defconst | (defconst SYMBOL INITVALUE [DOCSTRING])         |
 | setq     |                                                 |
@@ -470,7 +466,7 @@ and, or, not 操作符进行逻辑运算
 | let      |                                                 |
 | let*     |                                                 |
 
-*** function
+** function
 | functionp |                                                    |
 | defun     | byte-run.el --- byte-compiler support for inlining |
 | lambda    | subr.el                                            |
@@ -510,7 +506,7 @@ and, or, not 操作符进行逻辑运算
 (funcall #'and t nil) => nil
 #+END_SRC
 
-*** higher-order function
+** higher-order function
 1. (mapcar FUNCTION SEQUENCE)
 2. (mapc FUNCTION SEQUENCE) for side effects only, don't accumulate the results, 返回原始的 SEQUENCE
 
@@ -524,8 +520,8 @@ and, or, not 操作符进行逻辑运算
 (reduce (lambda (x y) (cons y x)) (nreverse '(3 4 5)) :initial-value '(6 7))
 #+END_SRC
 
-*** other types, (type-of OBJECT)
-**** character type is nothing more than an integer
+** other types, (type-of OBJECT)
+*** character type is nothing more than an integer
 ?Q => 81 ?q => 113 ?\0 => 0 ?\\ => 92 ?汉 => 27721 ?\uffff => 65535
 一般不用, 通常是为了操作 string
 | ctrl  | ?\C- ?\^ | 由于历史原因 DEL 表示为 ?\G-? |
@@ -536,7 +532,7 @@ and, or, not 操作符进行逻辑运算
 | alt   | ?\A-     |                               |
 | hyper | ?\H-     |                               |
 
-**** sequence type
+*** sequence type
 | sequencep                | (or (listp x) (arrayp x)) |
 | listp                    |                           |
 | arrayp                   |                           |
@@ -552,31 +548,11 @@ An association list or alist is a specially-constructed list whose elements are 
 
 Array is fixed-length sequences. They are further subdivided into: strings, vectors, char-tables and bool-vectors
 
-** 帮助
+* 说明和帮助
+lisp 大小写不敏感, 但 elisp 不是
+
+| M-x               |
+|-------------------|
 | describe-bindings |
 | describe-function |
 | describe-variable |
-
-** elisp 特殊的地方
-| lisp 大小写不敏感, 但 elisp 不是|
-* DONE hello world
-* CANCELED hello org
-* IDEA haha
-<2016-11-11 11:11:11>
-
-DEADLINE: <2019-06-11 11:11:11>
-
-* TODO to remove
-| TODO  |
-| FIXME |
-| NOTE  |
-
-TODO FIXME NOTE TODO FIXME NOTE
-
-** 222222222 TODO
-*** 333333333 FIXME
-**** 444444444 NOTE
-***** 555555555
-****** 666666666
-******* 777777777
-******** 888888888
