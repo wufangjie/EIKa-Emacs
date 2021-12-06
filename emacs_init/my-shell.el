@@ -10,7 +10,7 @@
       '(("git" "log")))
 
 (defvar eshell-histignore
-  '("^\\(cd\\|git\\|svn\\|cargo\\|h2r\\)\\(\\(\\s \\)+.*\\)?$"
+  '("^\\(cd\\|git\\|svn\\|cargo\\|h2r\\|find\\|grep\\|ln\\)\\(\\(\\s \\)+.*\\)?$"
     "^("
     "^xmodmap ~/\\.xmodmap$"
     "^sudo apt-get \\(update\\|upgrade\\|autoremove\\)$"
@@ -40,7 +40,7 @@
 ;; NOTE: add h2r to eshell-histignore
 (defun h2r (sub command &rest args)
   (eshell-do-eval
-   (eshell-parse-command command args)))
+   (eshell-parse-command command args) t))
 
 ;; #####################################################################
 ;; `term-mode'
