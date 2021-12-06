@@ -6,14 +6,16 @@
       eshell-history-size 4096
       eshell-hist-ignoredups t)
 
+(setq eshell-visual-subcommands
+      '(("git" "log")))
+
 (defvar eshell-histignore
-  '("^\\(cd\\|git\\|svn\\|g\\+\\+\\|cc\\|nvcc\\)\\(\\(\\s \\)+.*\\)?$"
+  '("^\\(cd\\|git\\|svn\\|cargo\\|h2r\\)\\(\\(\\s \\)+.*\\)?$"
     "^("
-    "^\\./a\\.out$"
     "^xmodmap ~/\\.xmodmap$"
     "^sudo apt-get \\(update\\|upgrade\\|autoremove\\)$"
     "^man "
-    "^cargo new "
+    "^ new "
     "^\\(sudo \\)?pip[23]? \\(list\\|show\\|search\\)"
     " -\\(-version\\|[Vv]\\)$"
     ))
@@ -28,6 +30,17 @@
 		     (throw 'break t))))))))
 
 
+;; Usage:
+;; 1. put following record to ~/.emacs.d/eshell/history
+;;    h2r sys du -ah --max-depth 1 ~/
+;;    h2r cargo RUST_BACKTRACE=1 cargo run
+;;    ...
+;; 2. insert `h2r s` in *eshell*, then press `Alt + p` to lookup matches in the history
+;; 3. modify it or not, then press RET to run
+;; NOTE: add h2r to eshell-histignore
+(defun h2r (sub command &rest args)
+  (eshell-do-eval
+   (eshell-parse-command command args)))
 
 ;; #####################################################################
 ;; `term-mode'
