@@ -60,6 +60,8 @@
 (setq jedi:setup-keys t)
 (setq jedi:complete-on-dot t)
 (add-hook 'python-mode-hook 'jedi:setup)
+(add-hook 'python-mode-hook 'flycheck-mode)
+
 ;; NOTE: Do not add jedi to interpreter, pdb single character complete!
 ;; (add-hook 'inferior-python-mode-hook 'jedi:setup)
 
