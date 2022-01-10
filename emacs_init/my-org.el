@@ -68,4 +68,7 @@
 <script type=\"text/javascript\" src=\"%PATH\"></script>
 ")
 
+
+(setq org-latex-compiler "xelatex")
+
 (provide 'my-org)
