@@ -51,7 +51,7 @@ M-x ediff-buffers 或 ediff 开启对比, (仅 linux 可用)
 #+END_EXAMPLE
 
 ** 输入重复的数字
-重复字符很简单, 但要输入重复数字不查资料, 还真想不到怎么做:
+重复字符很简单, 但要输入重复数字, 不查资料, 还真想不到怎么做:
 C-digits C-u digit-your-want-to-repeat
 
 ** 矩形区域编辑 (rectangle-mark-mode)
@@ -176,7 +176,7 @@ NOTE: 开了这个模式的话, 自动补全的回车选中就失灵了 (直接�
 为什么选择 eshell
 + +配合 outline-minor-mode 使用, 效果极佳+
 + man 命令会在一个新的 buffer 打开帮助文档 (这个可以用 M-x man 代替)
-+ 受限查找
++ 受限查找 (匹配前缀)
 + 历史记录管理较容易 (过滤等)
 + prompt 是 read-only (有利有弊)
 + 跨平台 (其实 windows 下功能也很有限)
@@ -390,10 +390,7 @@ sudo pip3 install virtualenv # 注意用 sudo, 不然找不到
 #+END_SRC
 
 *** 安装 exec-path-from-shell (只有 mac 需要此步骤)
-#+BEGIN_EXAMPLE
-M-x el-get-install RET exec-path-from-shell
-#+END_EXAMPLE
-在 el-get 路径被 load 之后, 添加
+M-x package-install RET exec-path-from-shell
 
 *** 安装 jedi
 #+BEGIN_SRC emacs-lisp
@@ -402,7 +399,7 @@ M-x el-get-install RET exec-path-from-shell
 #+END_SRC
 
 M-x package-refresh-contents
-M-x package-install ret jedi ret
+M-x package-install RET jedi RET
 M-x jedi:install-server
 
 *** 添加 jedi 的搜索路径到 .emacs

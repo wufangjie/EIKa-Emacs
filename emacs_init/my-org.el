@@ -1,5 +1,7 @@
 ;;; my-org.el -*- lexical-binding: t -*-
 
+(require 'org-tempo) ; https://orgmode.org/manual/Structure-Templates.html
+
 (setq org-emphasis-regexp-components
       '("- 	('\"{【　"
 	"- 	.,:!?;'\")}\\[】"
