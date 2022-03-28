@@ -16,8 +16,7 @@ TODO: use string= instead of equal, since we only use string."
      (defalias (intern ,(concat "easy-insert-" name))
        (lambda ()
 	 (interactive)
-	 (let ((content
-		(gethash (completing-read "Type wanted: " dict) dict)))
+	 (let ((content (gethash (completing-read "Type wanted: " dict) dict)))
 	   (if content
 	       (princ content (current-buffer))
 	     (message "Unknown type!")))))))
