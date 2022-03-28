@@ -83,12 +83,19 @@
       (comint-send-string
        process
        (format "exec(%s)\n" (python-shell--encode-string
-			     python-shell-eval-setup-code)))))
+			     python-shell-eval-setup-code)))
+      (comint-send-string
+       process
+       (format "exec(%s)\n" (python-shell--encode-string
+			     "from pprint import pprint;"))) ; seperate
+      ))
   (python-shell-send-buffer send-main))
 (add-hook 'python-mode-hook
 	  (lambda ()
 	    (local-unset-key (kbd "C-c C-c"))
-	    (local-set-key (kbd "C-c C-c") 'python-shell-send-buffer-smart)))
+	    (local-set-key (kbd "C-c C-c") 'python-shell-send-buffer-smart)
+	   ))
+
 
 
 ;; #####################################################################
@@ -117,7 +124,8 @@
     (concat (string-trim-right (shell-command-to-string "pyenv root"))
 	    "/versions/"
 	    version
-	    "/bin/python3")))
+	    "/bin/ipython"))) ;; ipython for mac, windows
+
 
 
 (provide 'my-python)
