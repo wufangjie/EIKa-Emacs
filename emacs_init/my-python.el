@@ -127,5 +127,9 @@
 	    "/bin/ipython"))) ;; ipython for mac, windows
 
 
+;;; in emacs, I use python 3.10.2 to do something about data science
+(if (string-equal system-type "darwin")
+    (pyenv-shell "3.10.2"))
+
 
 (provide 'my-python)
