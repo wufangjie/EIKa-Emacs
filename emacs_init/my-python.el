@@ -6,8 +6,12 @@
 ;; #####################################################################
 (setq python-shell-completion-native-enable nil)
 
-(if (string-equal system-type "gnu/linux")
-    (setq python-shell-interpreter "python3"))
+;;(if (string-equal system-type "gnu/linux")
+(setq python-shell-interpreter "ipython3")
+(setq python-shell-interpreter-args "--simple-prompt")
+;; https://emacs.stackexchange.com/questions/24453/weird-shell-output-when-using-ipython-5
+
+(setq comint-process-echoes nil)
 
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
@@ -98,38 +102,38 @@
 
 
 
-;; #####################################################################
-;; `pyenv'
-;; #####################################################################
-(defun pyenv-shell (version)
-  (interactive (list (completing-read "Pyenv: " (pyenv-versions))))
-  (setenv "PYENV_VERSION" version)
-  (setq python-shell-interpreter (pyenv-full-path version))
-  )
+;; ;; #####################################################################
+;; ;; `pyenv'
+;; ;; #####################################################################
+;; (defun pyenv-shell (version)
+;;   (interactive (list (completing-read "Pyenv: " (pyenv-versions))))
+;;   (setenv "PYENV_VERSION" version)
+;;   (setq python-shell-interpreter (pyenv-full-path version))
+;;   )
 
-(defun pyenv-shell-unset ()
-  (interactive)
-  (setenv "PYENV_VERSION"))
+;; (defun pyenv-shell-unset ()
+;;   (interactive)
+;;   (setenv "PYENV_VERSION"))
 
-(defun pyenv-versions ()
-  (cons "system" (split-string (shell-command-to-string "pyenv versions --bare"))))
+;; (defun pyenv-versions ()
+;;   (cons "system" (split-string (shell-command-to-string "pyenv versions --bare"))))
 
-(defun pyenv-version ()
-  (interactive)
-  (message (or (getenv "PYENV_VERSION") "system")))
+;; (defun pyenv-version ()
+;;   (interactive)
+;;   (message (or (getenv "PYENV_VERSION") "system")))
 
-(defun pyenv-full-path (version)
-  (if (string= version "system")
-      "python3"
-    (concat (string-trim-right (shell-command-to-string "pyenv root"))
-	    "/versions/"
-	    version
-	    "/bin/ipython"))) ;; ipython for mac, windows
+;; (defun pyenv-full-path (version)
+;;   (if (string= version "system")
+;;       "python3"
+;;     (concat (string-trim-right (shell-command-to-string "pyenv root"))
+;; 	    "/versions/"
+;; 	    version
+;; 	    "/bin/ipython"))) ;; ipython for mac, windows
 
 
-;;; in emacs, I use python 3.10.2 to do something about data science
-(if (string-equal system-type "darwin")
-    (pyenv-shell "3.10.2"))
+;; ;;; in emacs, I use python 3.10.2 to do something about data science
+;; (if (string-equal system-type "darwin")
+;;     (pyenv-shell "3.10.2"))
 
 
 (provide 'my-python)
