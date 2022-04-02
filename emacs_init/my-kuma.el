@@ -38,9 +38,9 @@
 			 (format content
 				 (read-from-minibuffer "Keyword: ")))
 		 nil 0)
-	      (message "Unknown system!")
+	      (message "Unknown system!"))
 	  (message "Unknown type!"))
-	  )))))
+	))))
 
 
 (global-set-key (kbd "C-;") 'kuma)
