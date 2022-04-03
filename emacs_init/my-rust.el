@@ -73,4 +73,28 @@
 	    (local-set-key (kbd "C-c C-c C-g") 'rustic-crate-grep)
 	    ))
 
+
+;; NOTE: fixed bug: rustic-test-arguments will be poisoned by
+;; calling cargo test current_test (not work) in emacs28 on mac:
+;; FIXED: I modified following two functions in rustic-cargo.el
+;; (defun rustic-cargo-run-test (test)
+;;   "Run TEST which can be a single test or mod name."
+;;   (let* ((c (append (list (rustic-cargo-bin) "test" test)
+;; 		    (split-string rustic-test-arguments)))
+;;          (buf rustic-test-buffer-name)
+;;          (proc rustic-test-process-name)
+;;          (mode 'rustic-cargo-test-mode))
+;;     (rustic-compilation c (list :buffer buf :process proc :mode mode))))
+
+;; ;;;###autoload
+;; (defun rustic-cargo-current-test ()
+;;   "Run 'cargo test' for the test near point."
+;;   (interactive)
+;;   (rustic-compilation-process-live)
+;;   (-if-let (test-to-run (rustic-cargo--get-test-target))
+;;       (rustic-cargo-run-test test-to-run)
+;;     (message "Could not find test at point.")))
+
+
+
 (provide 'my-rust)
