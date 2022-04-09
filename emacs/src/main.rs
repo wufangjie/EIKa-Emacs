@@ -17,7 +17,7 @@ const EMACS_CLIENT: &str = "/Applications/Emacs.app/Contents/MacOS/bin/emacsclie
 fn emacs_start_daemon() {
     Command::new(EMACS)
         .arg("--daemon")
-        .status()
+        .output()
         .expect("Failed: running emacs --daemon");
 }
 
@@ -25,13 +25,13 @@ fn emacs_kill_daemon() {
     Command::new(EMACS_CLIENT)
         .arg("--eval")
         .arg("(kill-emacs)") // no quote is needed
-        .status()
+        .output()
         .expect("Failed: killing emacs daemon");
 }
 
 fn emacs_start_client() {
     Command::new(EMACS_CLIENT)
-        .arg("--no-wait")
+        //.arg("--no-wait")
         .arg("-c")
         .arg("-a")
         .arg("") // NOTE: if no daemon existed, run `emacs --daemon` and retry
@@ -43,7 +43,7 @@ fn activate_emacs() {
     Command::new("open")
         .arg("-a")
         .arg("emacs")
-        .status()
+        .output()
         .expect("Failed: activating emacs");
 }
 
