@@ -1,6 +1,6 @@
 //! A smart (daemon/client) emacs launcher on macos
 //!
-//! version 0.1.0
+//! version 0.1.1
 //! cargo build --release
 //! sudo mv ./target/release/emacs /usr/local/bin/ # or any directory in $PATH
 //!
@@ -9,34 +9,59 @@
 //! 2. `open -a emacs` will be called to activate the new opened emacs
 
 use std::env;
-use std::process::Command;
+use std::process::{Command, Stdio};
+use std::thread;
+use std::time::Duration;
 
 const EMACS: &str = "/Applications/Emacs.app/Contents/MacOS/Emacs";
 const EMACS_CLIENT: &str = "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient";
 
-fn emacs_start_daemon() {
+fn start_emacs_daemon() {
     Command::new(EMACS)
         .arg("--daemon")
         .output()
-        .expect("Failed: running emacs --daemon");
+        .expect("Failed: start_emacs_daemon");
 }
 
-fn emacs_kill_daemon() {
+fn kill_emacs_daemon() {
     Command::new(EMACS_CLIENT)
         .arg("--eval")
         .arg("(kill-emacs)") // no quote is needed
         .output()
-        .expect("Failed: killing emacs daemon");
+        .expect("Failed: kill_emacs_daemon");
 }
 
-fn emacs_start_client() {
+fn start_emacs_client() {
     Command::new(EMACS_CLIENT)
-        //.arg("--no-wait")
-        .arg("-c")
-        .arg("-a")
+        .arg("--no-wait")
+        .arg("--create-frame")
+        .arg("--alternate-editor")
         .arg("") // NOTE: if no daemon existed, run `emacs --daemon` and retry
-        .spawn() // NOTE: use spawn instead of `&>/dev/null &`
-        .expect("Failed: running emacsclient");
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect("Failed: start_emacs_client");
+}
+
+// fn is_emacs_daemon_running() -> bool {
+//     Command::new(EMACS_CLIENT)
+//         .arg("--eval")
+//         .arg("()")
+//         .stdout(Stdio::null())
+//         .stderr(Stdio::null())
+//         .status()
+//         .expect("Failed: is_emacs_daemon_running")
+//         .success()
+// }
+
+fn is_emacs_frame_existing() -> bool {
+    Command::new(EMACS_CLIENT)
+        .arg("--eval")
+        .arg("(if (> (length (frame-list)) 1) t)")
+        .output()
+        .expect("Failed: is_emacs_frame_existing")
+        .stdout
+        == vec![b't', b'\n']
 }
 
 fn activate_emacs() {
@@ -44,7 +69,7 @@ fn activate_emacs() {
         .arg("-a")
         .arg("emacs")
         .output()
-        .expect("Failed: activating emacs");
+        .expect("Failed: activate_emacs");
 }
 
 fn main() {
@@ -53,24 +78,37 @@ fn main() {
 
     match args.next() {
         None => {
-            emacs_start_client();
+            if !is_emacs_frame_existing() {
+                start_emacs_client();
+                while !is_emacs_frame_existing() {
+                    thread::sleep(Duration::from_millis(100));
+                }
+            }
             activate_emacs();
         }
         Some(s) => match &s[..] {
-            "-d" | "--daemon" => emacs_start_daemon(),
-            "-k" | "--kill" => emacs_kill_daemon(),
+            "-d" | "--daemon" => start_emacs_daemon(),
+            "-k" | "--kill" => kill_emacs_daemon(),
+            "-n" | "--new" => {
+                start_emacs_client();
+                while !is_emacs_frame_existing() {
+                    thread::sleep(Duration::from_millis(100));
+                }
+                activate_emacs();
+            }
             "-r" | "--restart" => {
-                emacs_kill_daemon();
-                emacs_start_daemon();
+                kill_emacs_daemon();
+                start_emacs_daemon();
             }
             "-H" | "--help" => {
                 println!("Usage: emacs [OPTION]");
-                println!("Open emacs in a smart way.");
+                println!("Launch emacs in a smart way.");
                 println!();
                 println!("The following OPTIONS are accepted:");
                 println!("-d, --daemon     Start an emacs daemon process");
                 println!("-k, --kill       Kill the emacs daemon process");
                 println!("-r, --restart    Restart the emacs daemon process");
+                println!("-n, --new        Open a new emacs client");
                 println!("-H, --help       Print this usage information message");
                 println!("-V, --version    Just print version info and return");
                 println!();
