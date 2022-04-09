@@ -1,0 +1,10 @@
+* emacs_init
+Emacs init files
+
+* emacs
+A smart (daemon/client) emacs launcher on macos implemented by Rust
+
+* other files
+| .emacs    | Basic init file     |
+| elisp.org | elsip learning note |
+| emacs.org | emacs tricks note   |
