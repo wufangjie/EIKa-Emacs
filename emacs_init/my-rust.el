@@ -51,7 +51,7 @@
     (if dir
 	(let ((buffer (get-buffer-create "*rust grep*")))
 	  (shell-command
-	   (format "grep -rn \"%s\" %s --exclude-dir=target/ --exclude-dir=.git/ --exclude=\\*~"
+	   (format "grep -rn \"%s\" %s --exclude-dir=target --exclude-dir=.git --exclude=\\*~"
 		   (read-from-minibuffer "Crate grep: ") dir)
 	   buffer)
 	  (with-current-buffer buffer (grep-mode))
