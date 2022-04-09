@@ -4,7 +4,7 @@
 ;; frame 相关| 被注释掉的那些语句在打开一个新的 frame 时会失效, 不能用
 ;; #####################################################################
 ;; (set-face-attribute 'default nil :font "Yuan Mo Wen:pixelsize=24")
-(add-to-list 'default-frame-alist '(font . "Yuan Mo Wen:pixelsize=22"))
+(add-to-list 'default-frame-alist '(font . "Yuan Mo Wen:pixelsize=16"))
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'default-frame-alist '(alpha . 90))
 ;; (add-to-list 'default-frame-alist '(alpha . 100))

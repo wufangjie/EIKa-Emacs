@@ -282,7 +282,7 @@ NOTE: 开了这个模式的话, 自动补全的回车选中就失灵了 (直接�
 * python-mode
 ** python-mode 的一些说明
 emacs25 之后 C-c C-s 和 C-c C-r 不再能够调用 run-python,
-需要先 C-c C-p 才行, 而且 C-c C-p 之前需要加 prefix command
+需要先 C-c C-p 才行, 而且 C-c C-p 之前需要加 prefix command (用 C-u 可与 terminal 版保持一致的使用习惯)
 才能调出 dedicated process
 emacs24.5 C-c C-c 等带前缀的话, 可以让 if __name__ == '__main__' 块内的代码运行, 默认不运行
 
@@ -304,7 +304,11 @@ C-v 加 /sudo:: 前缀重新打开
 *** 修改
 + 注释 assignment 部分 (特别慢)
 + 给所有赋值操作符 font-lock-builtin-face
-+ 添加, 修改了几个关键词
++ 添加, 修改了几个关键词 cls, pprint
++ 我不喜欢 prompt read-only
+  #+begin_src emacs-lisp
+    (setq-local comint-prompt-read-only nil) ;; 原来是 t
+  #+end_src
 
 *** 编译
 当前buffer, M-x byte-compile-file RET python.el.gz 无报错则成功
