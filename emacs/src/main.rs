@@ -1,6 +1,6 @@
 //! A smart (daemon/client) emacs launcher on macos
 //!
-//! version 0.1.1
+//! version 0.1.2
 //! cargo build --release
 //! sudo mv ./target/release/emacs /usr/local/bin/ # or any directory in $PATH
 //!
@@ -41,18 +41,22 @@ fn start_emacs_client() {
         .stderr(Stdio::null())
         .spawn()
         .expect("Failed: start_emacs_client");
+
+    while !is_emacs_frame_existing() {
+        thread::sleep(Duration::from_millis(100));
+    }
 }
 
-// fn is_emacs_daemon_running() -> bool {
-//     Command::new(EMACS_CLIENT)
-//         .arg("--eval")
-//         .arg("()")
-//         .stdout(Stdio::null())
-//         .stderr(Stdio::null())
-//         .status()
-//         .expect("Failed: is_emacs_daemon_running")
-//         .success()
-// }
+fn is_emacs_daemon_running() -> bool {
+    Command::new(EMACS_CLIENT)
+        .arg("--eval")
+        .arg("()")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .expect("Failed: is_emacs_daemon_running")
+        .success()
+}
 
 fn is_emacs_frame_existing() -> bool {
     Command::new(EMACS_CLIENT)
@@ -80,25 +84,28 @@ fn main() {
         None => {
             if !is_emacs_frame_existing() {
                 start_emacs_client();
-                while !is_emacs_frame_existing() {
-                    thread::sleep(Duration::from_millis(100));
-                }
             }
             activate_emacs();
         }
         Some(s) => match &s[..] {
             "-d" | "--daemon" => start_emacs_daemon(),
             "-k" | "--kill" => kill_emacs_daemon(),
-            "-n" | "--new" => {
-                start_emacs_client();
-                while !is_emacs_frame_existing() {
-                    thread::sleep(Duration::from_millis(100));
-                }
-                activate_emacs();
-            }
             "-r" | "--restart" => {
                 kill_emacs_daemon();
                 start_emacs_daemon();
+            }
+            "-n" | "--new" => {
+                start_emacs_client();
+                activate_emacs();
+            }
+            "-a" | "--automator" => {
+                if !is_emacs_daemon_running() {
+                    start_emacs_daemon();
+                }
+                if !is_emacs_frame_existing() {
+                    start_emacs_client();
+                }
+                activate_emacs();
             }
             "-H" | "--help" => {
                 println!("Usage: emacs [OPTION]");
@@ -109,6 +116,7 @@ fn main() {
                 println!("-k, --kill       Kill the emacs daemon process");
                 println!("-r, --restart    Restart the emacs daemon process");
                 println!("-n, --new        Open a new emacs client");
+                println!("-a, --automator  Launch emacs, just for Automator");
                 println!("-H, --help       Print this usage information message");
                 println!("-V, --version    Just print version info and return");
                 println!();
