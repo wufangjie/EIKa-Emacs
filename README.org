@@ -4,6 +4,33 @@ Emacs init files
 * emacs
 A smart (daemon/client) emacs launcher on macos implemented by Rust
 
+Launch emacsclient (or open dir/file) connect to existed daemon in existed frame, if any of then not existed, create it and retry
+
+** Termianl
+Usage: emacs [OPTION | FILE]
+Launch emacs in a smart way.
+
+The following OPTIONS are accepted:
+-d, --daemon     Start an emacs daemon process
+-k, --kill       Kill the emacs daemon process
+-r, --restart    Restart the emacs daemon process
+-n, --new        Open a new emacs client
+-a, --automator  Launch emacs, just for Automator
+-H, --help       Print this usage information message
+-V, --version    Just print version info and return
+
+** Automator (open/activate)
+#+begin_src sh
+/usr/local/bin/emacs -a &>/dev/null &
+#+end_src
+
+** git (edit)
+#+begin_src sh
+git config core.editor emacs
+#+end_src
+
+** TODO startup
+
 * other files
 | .emacs    | Basic init file     |
 | elisp.org | elsip learning note |

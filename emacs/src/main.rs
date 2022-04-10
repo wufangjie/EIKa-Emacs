@@ -1,6 +1,6 @@
 //! A smart (daemon/client) emacs launcher on macos
 //!
-//! version 0.1.2
+//! version 0.1.3
 //! cargo build --release
 //! sudo mv ./target/release/emacs /usr/local/bin/ # or any directory in $PATH
 //!
@@ -9,6 +9,7 @@
 //! 2. `open -a emacs` will be called to activate the new opened emacs
 
 use std::env;
+use std::path::Path;
 use std::process::{Command, Stdio};
 use std::thread;
 use std::time::Duration;
@@ -45,6 +46,17 @@ fn start_emacs_client() {
     while !is_emacs_frame_existing() {
         thread::sleep(Duration::from_millis(100));
     }
+}
+
+fn open_path_in_emacs(path: &Path) {
+    // NOTE: Make sure frame exists
+    Command::new(EMACS_CLIENT)
+        .arg("--no-wait")
+        .arg(path)
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect("Failed: open_path_in_emacs");
 }
 
 fn is_emacs_daemon_running() -> bool {
@@ -108,7 +120,7 @@ fn main() {
                 activate_emacs();
             }
             "-H" | "--help" => {
-                println!("Usage: emacs [OPTION]");
+                println!("Usage: emacs [OPTION | FILE]");
                 println!("Launch emacs in a smart way.");
                 println!();
                 println!("The following OPTIONS are accepted:");
@@ -123,8 +135,17 @@ fn main() {
             }
             "-V" | "--version" => println!(env!("CARGO_PKG_VERSION")),
             other => {
-                println!("{}: unrecognized option '{}'", cmd, other);
-                println!("Try '{} --help' for more information", cmd);
+                let path: &Path = other.as_ref();
+                if path.is_dir() || path.is_file() {
+                    if !is_emacs_frame_existing() {
+                        start_emacs_client();
+                    }
+                    open_path_in_emacs(path);
+                    activate_emacs();
+                } else {
+                    println!("{}: unrecognized option '{}'", cmd, other);
+                    println!("Try '{} --help' for more information", cmd);
+                }
             }
         },
     }
