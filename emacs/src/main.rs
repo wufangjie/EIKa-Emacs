@@ -17,6 +17,7 @@ use std::time::Duration;
 const EMACS: &str = "/Applications/Emacs.app/Contents/MacOS/Emacs";
 const EMACS_CLIENT: &str = "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient";
 
+#[inline]
 fn start_emacs_daemon() {
     Command::new(EMACS)
         .arg("--daemon")
@@ -24,6 +25,7 @@ fn start_emacs_daemon() {
         .expect("Failed: start_emacs_daemon");
 }
 
+#[inline]
 fn kill_emacs_daemon() {
     Command::new(EMACS_CLIENT)
         .arg("--eval")
@@ -32,6 +34,7 @@ fn kill_emacs_daemon() {
         .expect("Failed: kill_emacs_daemon");
 }
 
+#[inline]
 fn start_emacs_client() {
     Command::new(EMACS_CLIENT)
         .arg("--no-wait")
@@ -48,6 +51,7 @@ fn start_emacs_client() {
     }
 }
 
+#[inline]
 fn open_path_in_emacs(path: &Path) {
     // NOTE: Make sure frame exists
     Command::new(EMACS_CLIENT)
@@ -59,6 +63,7 @@ fn open_path_in_emacs(path: &Path) {
         .expect("Failed: open_path_in_emacs");
 }
 
+#[inline]
 fn is_emacs_daemon_running() -> bool {
     Command::new(EMACS_CLIENT)
         .arg("--eval")
@@ -70,6 +75,7 @@ fn is_emacs_daemon_running() -> bool {
         .success()
 }
 
+#[inline]
 fn is_emacs_frame_existing() -> bool {
     Command::new(EMACS_CLIENT)
         .arg("--eval")
@@ -80,6 +86,7 @@ fn is_emacs_frame_existing() -> bool {
         == vec![b't', b'\n']
 }
 
+#[inline]
 fn activate_emacs() {
     Command::new("open")
         .arg("-a")
