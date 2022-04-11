@@ -230,7 +230,7 @@ NOTE: 开了这个模式的话, 自动补全的回车选中就失灵了 (直接�
 | RET     | dired-find-file              | 已重写, 详见 .emacs                   |
 | o       | dired-find-file-other-window |                                       |
 | C-o     | dired-display-file           | like o, but not move cursor           |
-| ^       | dired-up-directory           |                                       |
+| Shift-6 | dired-up-directory           |                                       |
 | <       | dired-prev-dirline           |                                       |
 | >       | dired-next-dirline           |                                       |
 | +       | dired-create-directory       |                                       |
