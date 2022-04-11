@@ -2,6 +2,10 @@
 ;; `eshell'
 ;; NOTE: use paragraph level move instead of outline-mode
 ;; #####################################################################
+
+(when (or (daemonp) (memq window-system '(mac ns x)))
+  (exec-path-from-shell-initialize))
+
 (setq eshell-save-history-on-exit t
       eshell-history-size 4096
       eshell-hist-ignoredups t)

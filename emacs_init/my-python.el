@@ -13,9 +13,6 @@
 
 (setq comint-process-echoes nil)
 
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
-
 
 ;; (add-hook 'python-mode-hook 'hs-minor-mode)
 (add-hook 'inferior-python-mode-hook
