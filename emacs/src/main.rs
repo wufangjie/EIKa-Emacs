@@ -1,6 +1,6 @@
 //! A smart (daemon/client) emacs launcher on macos
 //!
-//! version 0.1.3
+//! version 0.1.4
 //! cargo build --release
 //! sudo mv ./target/release/emacs /usr/local/bin/ # or any directory in $PATH
 //!
@@ -112,6 +112,8 @@ fn main() {
             "-r" | "--restart" => {
                 kill_emacs_daemon();
                 start_emacs_daemon();
+		start_emacs_client();
+		activate_emacs();
             }
             "-n" | "--new" => {
                 start_emacs_client();
@@ -131,11 +133,11 @@ fn main() {
                 println!("Launch emacs in a smart way.");
                 println!();
                 println!("The following OPTIONS are accepted:");
-                println!("-d, --daemon     Start an emacs daemon process");
-                println!("-k, --kill       Kill the emacs daemon process");
-                println!("-r, --restart    Restart the emacs daemon process");
+                println!("-d, --daemon     Start emacs daemon if not exists");
+                println!("-k, --kill       Kill the daemon");
+                println!("-r, --restart    Restart daemon then open a client");
                 println!("-n, --new        Open a new emacs client");
-                println!("-a, --automator  Launch emacs, just for Automator");
+                println!("-a, --automator  Launch emacs, only for Automator");
                 println!("-H, --help       Print this usage information message");
                 println!("-V, --version    Just print version info and return");
                 println!();
