@@ -74,28 +74,49 @@
 
 
 ;; #####################################################################
-;; smart C-c C-c
+;; smart C-c C-p
 ;; #####################################################################
-(defun python-shell-send-buffer-smart (&optional send-main)
-  (interactive (list current-prefix-arg))
-  (unless (python-shell-get-process)
-    (let* ((current-prefix-arg t)
-	   (process (call-interactively 'run-python)))
-      (comint-send-string
-       process
-       (format "exec(%s)\n" (python-shell--encode-string
-			     python-shell-eval-setup-code)))
-      (comint-send-string
-       process
-       (format "exec(%s)\n" (python-shell--encode-string
-			     "from pprint import pprint;"))) ; seperate
-      ))
-  (python-shell-send-buffer send-main))
+(defun run-python-smart (&optional cmd dedicated show)
+  (interactive
+   (if current-prefix-arg
+       (list
+        (read-shell-command "Run Python: " (python-shell-calculate-command))
+        (y-or-n-p "Make dedicated process? ")
+        t) ;; (= (prefix-numeric-value current-prefix-arg) 4))
+     (list (python-shell-calculate-command) "y" t)))
+  (let ((buffer
+         (python-shell-make-comint
+          (or cmd (python-shell-calculate-command))
+          (python-shell-get-process-name dedicated) show)))
+    (if show (other-window -1))
+    (get-buffer-process buffer)))
+
 (add-hook 'python-mode-hook
 	  (lambda ()
-	    (local-unset-key (kbd "C-c C-c"))
-	    (local-set-key (kbd "C-c C-c") 'python-shell-send-buffer-smart)
-	   ))
+	    (local-unset-key (kbd "C-c C-p"))
+	    (local-set-key (kbd "C-c C-p") 'run-python-smart)))
+
+
+;; (defun python-shell-send-buffer-smart (&optional send-main)
+;;   (interactive (list current-prefix-arg))
+;;   (unless (python-shell-get-process)
+;;     (let* ((current-prefix-arg t)
+;; 	   (process (call-interactively 'run-python)))
+;;       (comint-send-string
+;;        process
+;;        (format "exec(%s)\n" (python-shell--encode-string
+;; 			     python-shell-eval-setup-code)))
+;;       (comint-send-string
+;;        process
+;;        (format "exec(%s)\n" (python-shell--encode-string
+;; 			     "from pprint import pprint;"))) ; seperate
+;;       ))
+;;   (python-shell-send-buffer send-main))
+;; (add-hook 'python-mode-hook
+;; 	  (lambda ()
+;; 	    (local-unset-key (kbd "C-c C-c"))
+;; 	    (local-set-key (kbd "C-c C-c") 'python-shell-send-buffer-smart)
+;; 	   ))
 
 
 
