@@ -1,0 +1,35 @@
+* Termianl
+Usage: emacs [OPTION | FILE]
+Launch emacs in a smart way.
+
+The following OPTIONS are accepted:
+-d, --daemon     Start an emacs daemon process
+-k, --kill       Kill the emacs daemon process
+-r, --restart    Restart the emacs daemon process
+-n, --new        Open a new emacs client
+-a, --automator  Launch emacs, just for Automator
+-H, --help       Print this usage information message
+-V, --version    Just print version info and return
+
+* Automator (open/activate)
+#+begin_src sh
+/usr/local/bin/emacs -a &>/dev/null &
+#+end_src
+
+* git (edit)
+#+begin_src sh
+git config core.editor emacs
+#+end_src
+
+* TODO startup
+
+* reduce binary size
+https://github.com/johnthagen/min-sized-rust
+
+for m1
+#+begin_src sh
+cargo +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --target aarch64-apple-darwin --release
+#+end_src
+
+* emacsclient's --no-wait option
+means ask the server to do somthing without any wait
