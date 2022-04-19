@@ -1,6 +1,6 @@
 ;;; my-rust.el ergonomic enhance for rust programming.
 
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; URL: https://github.com/wufangjie/EIKa-Emacs/blob/main/emacs_init/my-rust.el
 ;; Package-Requires: rustic
 
@@ -20,6 +20,19 @@
 ;; 	    (when (eq major-mode 'rustic-mode)
 ;; 	      (rustic-format-file))))
 
+(defun rustic-get-package-root ()
+  (locate-dominating-file (buffer-file-name (current-buffer)) "Cargo.toml"))
+
+(defun rustic-get-package-name ()
+  (car (last (s-split "/" (rustic-get-package-root) t)))) ;; this car is safe
+
+(defun rustic-get-current-bin ()
+  (let* ((current-file (buffer-file-name (current-buffer)))
+		 (dirs (s-split "/" current-file)))
+	     (if (string= "bin" (car (last dirs 2)))
+		 (car (s-split "\\." (car (last dirs))))
+	       (rustic-get-package-name))))
+
 (defun wait-proc (proc)
   (while (eq (process-status proc) 'run)
     (sit-for 0.1))
@@ -27,8 +40,11 @@
 
 (defun rustic-cargo-fmt-then-run (&optional arg)
   (interactive "P")
-  (wait-proc (rustic-cargo-fmt))
-  (let ((command (if arg "cargo run --release" "cargo run")))
+  (let* ((default-cmd (format "cargo run --bin %s" (rustic-get-current-bin)))
+	 (command (if arg
+		      (read-from-minibuffer "Command: " default-cmd)
+		    default-cmd)))
+    (wait-proc (rustic-cargo-fmt))
     (rustic-run-cargo-command command (list :mode 'rustic-cargo-run-mode))))
 
 (defun rustic-cargo-fmt-then-test ()
@@ -46,13 +62,12 @@
 
 (defun rustic-crate-grep ()
   (interactive)
-  (let ((dir (locate-dominating-file
-	      (buffer-file-name (current-buffer)) "Cargo.toml")))
-    (if dir
+  (let ((package-root (rustic-get-package-root)))
+    (if package-root
 	(let ((buffer (get-buffer-create "*rust grep*")))
 	  (shell-command
 	   (format "grep -rn \"%s\" %s --exclude-dir=target --exclude-dir=.git --exclude=\\*~"
-		   (read-from-minibuffer "Crate grep: ") dir)
+		   (read-from-minibuffer "Crate grep: ") package-root)
 	   buffer)
 	  (with-current-buffer buffer (grep-mode))
 	  (if (= (count-windows) 1)
@@ -70,7 +85,8 @@
 	    (local-set-key (kbd "C-c C-c C-c") 'rustic-cargo-fmt-then-current-test)
 	    (local-unset-key (kbd "C-c C-c C-r"))
 	    (local-set-key (kbd "C-c C-c C-r") 'rustic-cargo-fmt-then-run)
-	    (local-set-key (kbd "C-c C-c C-g") 'rustic-crate-grep)
+	    (local-set-key (kbd "C-c C-c g") 'rustic-crate-grep)
+	    ;; NOTE: C-g usallly means to abort
 	    ))
 
 
