@@ -21,6 +21,8 @@
 	    (setq truncate-lines nil) ; use M-x toggle-truncate-lines
 	    ;; (setq org-src-fontify-natively t) ; highlight source code
 	    (setq org-html-validation-link nil)
+	    ;; (setq electric-indent-mode nil) ;; did not work
+	    (setq org-src-preserve-indentation t)
 	    ;; (setcar org-emphasis-regexp-components "- 	('\"{【　")
 	    ;; (setcar (cdr org-emphasis-regexp-components) "- 	.,:!?;'\")}\\[】")
 	    ;; (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
