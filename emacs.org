@@ -93,6 +93,9 @@ paragarph 移动的方式, 暂时不加入 .emacs
 (global-set-key (kbd "M-h") 'mark-paragraph)
 #+END_SRC
 
+** open large file
+M-x find-file-literally
+
 * org-mode
 ** 用大纲 (outline) 组织内容
 | 快捷键 | 说明                       |
