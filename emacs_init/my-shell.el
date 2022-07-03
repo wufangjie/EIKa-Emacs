@@ -14,7 +14,7 @@
       '(("git" "log")))
 
 (defvar eshell-histignore
-  '("^\\(cd\\|git\\|svn\\|cargo\\|h2r\\|find\\|grep\\|ln\\)\\(\\(\\s \\)+.*\\)?$"
+  '("^\\(ls\\|cd\\|git\\|svn\\|h2r\\|find\\|grep\\|ln\\|which\\)\\(\\(\\s \\)+.*\\)?$"
     "^("
     "^xmodmap ~/\\.xmodmap$"
     "^sudo apt-get \\(update\\|upgrade\\|autoremove\\)$"
