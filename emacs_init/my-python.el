@@ -7,7 +7,7 @@
 (setq python-shell-completion-native-enable nil)
 
 ;;(if (string-equal system-type "gnu/linux")
-(setq python-shell-interpreter "ipython3")
+(setq python-shell-interpreter "ipython3.10")
 (setq python-shell-interpreter-args "--simple-prompt")
 ;; https://emacs.stackexchange.com/questions/24453/weird-shell-output-when-using-ipython-5
 
@@ -152,6 +152,9 @@
 ;; ;;; in emacs, I use python 3.10.2 to do something about data science
 ;; (if (string-equal system-type "darwin")
 ;;     (pyenv-shell "3.10.2"))
+
+(if (string-equal system-type "darwin")
+    (setq flycheck-python-pylint-executable "/opt/homebrew/bin/pylint"))
 
 
 (provide 'my-python)
