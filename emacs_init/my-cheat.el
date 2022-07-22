@@ -16,7 +16,7 @@
 
 ;; `global-variable`
 (defvar cheat-topic nil)
-(defvar cheat-history '("hello" "world" "cheat" "shell" "rust" "python" "algorithm"))
+(defvar cheat-history '())
 (defvar cheat-page 1)
 
 
@@ -86,7 +86,7 @@
 ;; record history and reset page if necessary
 (defun cheat-record (thing)
   (let ((query-no-page (replace-regexp-in-string "/[0-9]+$" "" thing)))
-    (when (string= (car cheat-history) query-no-page)
+    (unless (string= (car cheat-history) query-no-page)
       (setq cheat-history (cons query-no-page cheat-history)))
     (setq cheat-page (if (string-match "/[0-9]+$" thing)
 			 (string-to-number (match-string 0 thing))
