@@ -85,13 +85,13 @@
 
 ;; record history and reset page if necessary
 (defun cheat-record (thing)
-  (setq cheat-history (cons
-		       (replace-regexp-in-string "/\\[0-9\\]+$" "" thing)
-		       cheat-history))
-  (setq cheat-page (if (string-match "/\\[0-9\\]+$" thing)
-		       (string-to-number (match-string 0 thing))
-		     1))
-  )
+  (let ((query-no-page (replace-regexp-in-string "/[0-9]+$" "" thing)))
+    (when (string= (car cheat-history) query-no-page)
+      (setq cheat-history (cons query-no-page cheat-history)))
+    (setq cheat-page (if (string-match "/[0-9]+$" thing)
+			 (string-to-number (match-string 0 thing))
+		       1))
+    ))
 
 
 ;;; forked following from cheat.el
