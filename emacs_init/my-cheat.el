@@ -35,20 +35,25 @@
 	(t (sh-mode)))
   (setq buffer-read-only nil))
 
+(defun cheat-get-prompt ()
+  (if cheat-topic
+      (format "cht.sh/%s%s> "
+	      cheat-topic
+	      (if (< cheat-page 2) "" (format "/.../%d" cheat-page)))
+    "cht.sh> "))
 
 ;; main function
-(defun cht-sh (i) ;; with last i query as default content
-  ;; if no prefix is given, arg == 1, so do not use C-1 to prefix
-  (interactive "p")
-  (let* ((prompt (if cheat-topic
-		     (format "cht.sh/%s%s> "
-			     cheat-topic
-			     (if (< cheat-page 2) "" (format "/.../%d" cheat-page)))
-		   "cht.sh> "))
-	 (default (if (= 1 i) "" (nth (max (- (abs i) 1) 0) cheat-history))))
-    (cheat-run (read-from-minibuffer prompt default)))
-  )
-
+(defun cht-sh (arg)
+  ;; if no prefix is given, no default content
+  ;; else if the prefix is not number or == 0, use last query as default content
+  ;; else use last ith (prefix) query (if ith > len(cheat-history) "")
+  (interactive "P")
+  (let ((default (when arg
+		   (nth (if (numberp arg)
+			    (max 0 (- (abs arg) 1))
+			  0)
+			cheat-history))))
+    (cheat-run (read-from-minibuffer (cheat-get-prompt) default))))
 
 ;; dispatch command
 ;; only record /topic/query (without /page)
