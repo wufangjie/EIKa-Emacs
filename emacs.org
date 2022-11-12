@@ -282,6 +282,25 @@ NOTE: 开了这个模式的话, 自动补全的回车选中就失灵了 (直接�
 2. 无法选中进行 mark
 3. 删除 buffer 时的提示很烦人, 修改源码中的 :dangerous t, 然后重新 byte-compile-file 即可
 
+* version control
+** 常用命令
+| vc-ediff         | 工作区与最后提交             |
+| ediff-buffer     | revision 之后比较两个 buffer |
+| vc-print-log     | 见下一节                     |
+| vc-version-ediff | 比较指定 commit 之间         |
+
+** vc-print-log
+现实当前文件相关的所有历史 commit, 会出一个 *vc-change-log* buffer
+该 buffer 常用快捷键
+
+| n | next commit                                                   |
+| p | prev commit                                                   |
+| f | view the revision indicated at the current point              |
+| d | show diff between the revision with the next earlier revision |
+
+** pretty git log
+详见 emacs_init/my-git.el
+
 * python-mode
 ** python-mode 的一些说明
 emacs25 之后 C-c C-s 和 C-c C-r 不再能够调用 run-python,

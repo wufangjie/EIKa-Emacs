@@ -13,6 +13,7 @@
 (require 'my-basic)
 (require 'my-utils)
 
+(require 'my-git)
 (require 'my-shell)
 
 (require 'my-file)
