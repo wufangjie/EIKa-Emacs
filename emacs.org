@@ -349,6 +349,24 @@ M-x term 可以跑一个 fully functional 的 terminal, (我是在研究如何�
 | C-c C-n | term-next-prompt      |                                           |
 NOTE: 其实我也不太在意多按一个回车键, 和 emacs 全局快捷键相比不值一提, 就把默认的改成 line-mode 了
 
+* fold/unfold code
+** C-M- move
+| beginning-of-defun | C-M-a |                                                |
+| end-of-defun       | C-M-e | 很奇怪, 右 control 不行                        |
+| forward-list       | C-M-n | 如果下一个括号是左括号, 则跳到与之匹配的右括号 |
+| backward-list      | C-M-p | 如果上一个括号是右括号, 则跳到与之匹配的左括号 |
+
+** hs-minor-mode
+#+begin_src emacs-lisp
+(hs-minor-mode t)
+#+end_src
+| hs-hide-level | 最好光标到所处 level 的最左端                     |
+|               | 没有 hs-show-level                                |
+| hs-hide-block | 最好光标到所处行的最右边 (有点类似上面的括号匹配) |
+| hs-show-block |                                                   |
+| hs-hide-all   |                                                   |
+| hs-show-all   |                                                   |
+
 * emacs for mysql
 配置详见 emacs_init/my-sql.el
 0. 运行 M-x sql-mysql
