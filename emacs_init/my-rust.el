@@ -1,4 +1,5 @@
-;;; my-rust.el ergonomic enhance for rust programming.
+;;; my-rust.el -*- lexical-binding: t -*-
+;; ergonomic enhance for rust programming.
 
 ;; Version: 0.1.1
 ;; URL: https://github.com/wufangjie/EIKa-Emacs/blob/main/emacs_init/my-rust.el
@@ -78,6 +79,7 @@
 
 (add-hook 'rustic-mode-hook
 	  (lambda ()
+	    (hs-minor-mode t)
 	    (setq rustic-test-arguments "-- --nocapture")
 	    (local-unset-key (kbd "C-c C-c C-t"))
 	    (local-set-key (kbd "C-c C-c C-t") 'rustic-cargo-fmt-then-test)
@@ -110,6 +112,21 @@
 ;;   (-if-let (test-to-run (rustic-cargo--get-test-target))
 ;;       (rustic-cargo-run-test test-to-run)
 ;;     (message "Could not find test at point.")))
+
+
+
+
+(generate-easy-insert-func
+ "rust"
+ `(("test" . ,(concat
+	       "#[cfg(test)]\n"
+	       "mod tests {\n"
+	       "    use super::*;\n\n"
+	       "    #[test]\n"
+	       "    fn it_works() {\n"
+	       "    }\n"
+	       "}\n"))
+   ))
 
 
 
